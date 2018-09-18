@@ -1,6 +1,5 @@
 module.exports = {
   name: 'Polkadot JS API',
-  mode: 'file',
   exclude: ['test', '**/*spec.ts'],
   excludeExternals: true,
   excludeNotExported: true,
@@ -9,6 +8,7 @@ module.exports = {
   includes: './docs/guides',
   includeDeclarations: true,
   out: 'docs/api',
+  mdEngine: 'gitbook',
   module: 'commonjs',
   stripInternal: 'true',
   theme: 'markdown',
@@ -16,4 +16,4 @@ module.exports = {
   moduleResolution: 'node',
   suppressExcessPropertyErrors: true,
   suppressImplicitAnyIndexErrors: true
-}
+};
