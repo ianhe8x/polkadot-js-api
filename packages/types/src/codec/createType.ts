@@ -4,11 +4,12 @@
 
 import assert from '@polkadot/util/assert';
 
-import { Codec, Constructor } from '../types';
 import Text from '../Text';
+import Base from './Base';
 import Tuple from './Tuple';
-import * as Types from '../index';
 import Vector from './Vector';
+
+type Constructor = { new(value?: any): Base };
 
 export enum TypeDefInfo {
   Plain,
@@ -127,14 +128,16 @@ export function getTypeClass (value: TypeDef): Constructor {
     );
   }
 
-  const Type = (Types as any)[value.type];
+  // We are dynamically loading as to avoid circular dependencies
+  const Types = require('../index');
+  const Type = Types[value.type];
 
   assert(Type, `Unable to determine type from '${value.type}'`);
 
   return Type;
 }
 
-export default function createType (type: Text | string, value?: any): Codec<any> {
+export default function createType (type: Text | string, value?: any): Base {
   // l.debug(() => ['createType', { type, value }]);
 
   const Type = getTypeClass(

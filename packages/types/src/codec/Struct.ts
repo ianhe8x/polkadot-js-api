@@ -2,8 +2,11 @@
 // This software may be modified and distributed under the terms
 // of the ISC license. See the LICENSE file for details.
 
+import isHex from '@polkadot/util/is/hex';
+import isU8a from '@polkadot/util/is/u8a';
 import u8aConcat from '@polkadot/util/u8a/concat';
 import u8aToHex from '@polkadot/util/u8a/toHex';
+import u8aToU8a from '@polkadot/util/u8a/toU8a';
 
 import { Codec, Constructor } from '../types';
 import { l } from './Base';
@@ -95,6 +98,10 @@ export default class Struct<
   }
 
   fromJSON (input: any): Struct<S, T, V, E> {
+    if (isHex(input) || isU8a(input)) {
+      return this.fromU8a(u8aToU8a(input));
+    }
+
     [...this.keys()].forEach((key) => {
       const jsonKey = this._jsonMap.get(key as any) || key;
       // @ts-ignore `this.get(key)` is possibly undefined, but it's not

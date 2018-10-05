@@ -3,7 +3,7 @@
 // of the ISC license. See the LICENSE file for details.
 
 import { ProviderInterface, ProviderInterface$Callback } from '@polkadot/api-provider/types';
-import { Section, Method } from '@polkadot/jsonrpc/types';
+import { RpcSection, RpcMethod } from '@polkadot/jsonrpc/types';
 import { ApiInterface, ApiInterface$Section, ApiInterface$Section$Method } from './types';
 
 import { Base, Vector, createType } from '@polkadot/types/codec';
@@ -14,12 +14,17 @@ import ExtError from '@polkadot/util/ext/error';
 import isFunction from '@polkadot/util/is/function';
 
 /**
+ * @name Api
+ * @summary The API may use a HTTP or WebSockets provider.
+ * @description It allows for querying a Polkadot Client Node.
  * @example
+ * <BR><PRE><CODE>
  * import Api from '@polkadot/api';
  * import WsProvider from '@polkadot/api-provider/ws';
- *
+ * <BR>
  * const provider = new WsProvider('http://127.0.0.1:9944');
  * const api = new Api(provider);
+ * </CODE></PRE>
  */
 export default class Api implements ApiInterface {
   private _provider: ProviderInterface;
@@ -46,16 +51,18 @@ export default class Api implements ApiInterface {
 
   /**
    * @name signature
-   * @signature jsonrpcSignature (method: InterfaceMethodDefinition): string
    * @summary Returns a string representation of the method with inputs and outputs.
    * @description
    * Formats the name, inputs and outputs into a human-readable string. This contains the input parameter names input types and output type.
-   * @example
-   *   import Api from '@polkadot/Api';
    *
-   *   Api.signature({ name: 'test_method', params: [ { name: 'dest', type: 'Address' } ], type: 'Address' }); // => test_method (dest: Address): Address
+   * @example
+   * <BR><PRE><CODE>
+   * import Api from '@polkadot/Api';
+   * <BR>
+   * Api.signature({ name: 'test_method', params: [ { name: 'dest', type: 'Address' } ], type: 'Address' }); // => test_method (dest: Address): Address
+   * </CODE></PRE>
    */
-  static signature ({ method, params, type }: Method): string {
+  static signature ({ method, params, type }: RpcMethod): string {
     const inputs = params.map(({ name, type }) =>
       `${name}: ${type}`
     ).join(', ');
@@ -63,7 +70,7 @@ export default class Api implements ApiInterface {
     return `${method} (${inputs}): ${type}`;
   }
 
-  private createInterface ({ methods, section }: Section): ApiInterface$Section {
+  private createInterface ({ methods, section }: RpcSection): ApiInterface$Section {
     return Object
       .keys(methods)
       .reduce((exposed, method) => {
@@ -78,7 +85,7 @@ export default class Api implements ApiInterface {
       }, {} as ApiInterface$Section);
   }
 
-  private createMethodSend (rpcName: string, method: Method): ApiInterface$Section$Method {
+  private createMethodSend (rpcName: string, method: RpcMethod): ApiInterface$Section$Method {
     const call = async (...values: Array<any>): Promise<any> => {
       // TODO Warn on deprecated methods
       try {
@@ -99,7 +106,7 @@ export default class Api implements ApiInterface {
     return call as ApiInterface$Section$Method;
   }
 
-  private createMethodSubscribe (rpcName: string, method: Method): ApiInterface$Section$Method {
+  private createMethodSubscribe (rpcName: string, method: RpcMethod): ApiInterface$Section$Method {
     const unsubscribe = (subscriptionId: any): Promise<any> =>
       this._provider.unsubscribe(rpcName, method.subscribe[1], subscriptionId);
     const _call = async (...values: Array<any>): Promise<any> => {
@@ -131,7 +138,7 @@ export default class Api implements ApiInterface {
     return call;
   }
 
-  private formatInputs (method: Method, inputs: Array<any>): Array<Base> {
+  private formatInputs (method: RpcMethod, inputs: Array<any>): Array<Base> {
     assert(method.params.length === inputs.length, `Expected ${method.params.length} parameters, ${inputs.length} found instead`);
 
     return method.params.map(({ type }, index) =>
@@ -139,8 +146,8 @@ export default class Api implements ApiInterface {
     );
   }
 
-  private formatOutput (method: Method, params: Array<Base>, result?: any): Base {
-    const base = createType(method.type as string, result);
+  private formatOutput (method: RpcMethod, params: Array<Base>, result?: any): Base {
+    const base = createType(method.type as string).fromJSON(result);
 
     if (method.type === 'StorageData') {
       const type = (params[0] as StorageKey).outputType;

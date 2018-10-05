@@ -1,5 +1,5 @@
 {
-  "version": "0.30.23",
+  "version": "0.30.28",
   "private": true,
   "engines": {
     "node": "^10.1.0",
@@ -21,7 +21,7 @@
     "test": "jest --coverage"
   },
   "devDependencies": {
-    "@polkadot/dev": "^0.20.21",
+    "@polkadot/dev": "^0.20.24",
     "@polkadot/ts": "^0.1.30"
   },
   "dependencies": {
