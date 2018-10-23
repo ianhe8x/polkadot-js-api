@@ -23,7 +23,6 @@ describe('U8a', () => {
     const testEncode = (to: CodecTo, expected: string | Uint8Array) =>
       it(`can encode ${to}`, () => {
         const e = new U8a([1, 2, 3, 4, 5]);
-        console.log(e[to](), expected);
         expect(e[to]()).toEqual(expected);
       });
 
