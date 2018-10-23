@@ -22,7 +22,16 @@ export default class U8a extends Uint8Array implements Codec {
     this.raw = U8a.decodeU8a(value);
   }
 
-  static decodeU8a (value: any): Uint8Array {
+  /**
+   * Decode input to pass into constructor.
+   *
+   * @param Types - Types definition.
+   * @param value - Value to decode, one of:
+   * - hex
+   * - Uint8Array
+   * - array
+   */
+  private static decodeU8a (value: AnyU8a): Uint8Array {
     if (isU8a(value)) {
       return value;
     }
