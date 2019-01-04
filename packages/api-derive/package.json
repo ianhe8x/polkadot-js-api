@@ -32,6 +32,9 @@
   "dependencies": {
     "@babel/runtime": "^7.2.0",
     "@dagrejs/graphlib": "^2.1.4",
+    "@polkadot/api": "^0.37.1",
+    "@polkadot/types": "^0.37.1",
+    "@polkadot/util": "^0.33.29",
     "@types/rx": "^4.1.1",
     "rxjs": "^6.3.3"
   }
