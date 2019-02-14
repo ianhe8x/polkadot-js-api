@@ -10,6 +10,7 @@ import { getTypeDef, getTypeClass } from './codec/createType';
 import Struct from './codec/Struct';
 import U8aFixed from './codec/U8aFixed';
 import { FunctionMetadata, FunctionArgumentMetadata } from './Metadata/v0/Modules';
+import { FunctionMetadata as FunctionMetadataV2, FunctionArgumentMetadata as FunctionArgumentMetadataV2 } from './Metadata/v2/Modules';
 
 interface ArgsDef {
   [index: string]: Constructor;
@@ -137,7 +138,7 @@ export default class Method extends Struct {
   }
 
   // If the extrinsic function has an argument of type `Origin`, we ignore it
-  static filterOrigin (meta?: FunctionMetadata): Array<FunctionArgumentMetadata> {
+  static filterOrigin (meta?: FunctionMetadata | FunctionMetadataV2): Array<FunctionArgumentMetadata | FunctionArgumentMetadataV2> {
     // FIXME should be `arg.type !== Origin`, but doesn't work...
     return meta
       ? meta.arguments.filter(({ type }) =>

@@ -3,6 +3,7 @@
 // of the Apache-2.0 license. See the LICENSE file for details.
 
 import { FunctionMetadata } from '@polkadot/types/Metadata/v0/Modules';
+import { FunctionMetadata as FunctionMetadataV2 } from '@polkadot/types/Metadata/v2/Modules';
 import { MethodFunction } from '@polkadot/types/Method';
 import { Method } from '@polkadot/types/index';
 import { assert } from '@polkadot/util';
@@ -17,7 +18,7 @@ export default function createDescriptor (
   section: string,
   method: string,
   index: number,
-  meta: FunctionMetadata
+  meta: FunctionMetadata | FunctionMetadataV2
 ): MethodFunction {
   const callIndex = new Uint8Array([index, meta.id.toNumber()]);
   let extrinsicFn: any;
@@ -26,7 +27,7 @@ export default function createDescriptor (
 
   extrinsicFn = (...args: any[]): Method => {
     assert(expectedArgs.length.valueOf() === args.length, `Extrinsic ${section}.${method} expects ${expectedArgs.length.valueOf()} arguments, got ${args.length}.`);
-
+    // TODO: pass args to constructor according to meta
     return new Method({
       args,
       callIndex
