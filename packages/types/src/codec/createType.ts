@@ -49,25 +49,38 @@ export function typeSplit (type: string): Array<string> {
         break;
 
       // inc struct depth, start found
-      case '{': sDepth++; break;
+      case '{':
+        sDepth++;
+        break;
 
       // dec struct depth, end found
-      case '}': sDepth--; break;
+      case '}':
+        sDepth--;
+        break;
 
       // inc tuple depth, start found
-      case '(': tDepth++; break;
+      case '(':
+        tDepth++;
+        break;
 
       // dec tuple depth, end found
-      case ')': tDepth--; break;
+      case ')':
+        tDepth--;
+        break;
 
       // inc compact/vec depth, start found
-      case '<': vDepth++; break;
+      case '<':
+        vDepth++;
+        break;
 
       // dec compact/vec depth, end found
-      case '>': vDepth--; break;
+      case '>':
+        vDepth--;
+        break;
 
       // normal character
-      default: break;
+      default:
+        break;
     }
   }
 
@@ -121,6 +134,91 @@ export function getTypeDef (_type: Text | string, name?: string): TypeDef {
 
   return value;
 }
+// function isV2Type (type: string) {
+//   return type.startsWith('#V2');
+// }
+//
+// // TODO: support V2
+// export function getTypeDefV0 (type: string, name?: string): TypeDef {
+//   const value: TypeDef = {
+//     info: TypeDefInfo.Plain,
+//     name,
+//     type
+//   };
+//   let subType = '';
+//
+//   const startingWith = (type: string, start: string, end: string): boolean => {
+//     if (type.substr(0, start.length) !== start) {
+//       return false;
+//     }
+//
+//     assert(type[type.length - 1] === end, `Expected '${start}' closing with '${end}'`);
+//
+//     subType = type.substr(start.length, type.length - start.length - 1);
+//
+//     return true;
+//   };
+//
+//   if (startingWith(type, '(', ')')) {
+//     value.info = TypeDefInfo.Tuple;
+//     value.sub = typeSplit(subType).map((inner) => getTypeDef(inner));
+//   } else if (startingWith(type, '{', '}')) {
+//     const parsed = JSON.parse(type);
+//
+//     value.info = TypeDefInfo.Struct;
+//     value.sub = Object.keys(parsed).map((name) => getTypeDef(parsed[name], name));
+//   } else if (startingWith(type, 'Compact<', '>')) {
+//     value.info = TypeDefInfo.Compact;
+//     value.sub = getTypeDef(subType);
+//   } else if (startingWith(type, 'Option<', '>')) {
+//     value.info = TypeDefInfo.Option;
+//     value.sub = getTypeDef(subType);
+//   } else if (startingWith(type, 'Vec<', '>')) {
+//     value.info = TypeDefInfo.Vector;
+//     value.sub = getTypeDef(subType);
+//   }
+//
+//   return value;
+// }
+//
+// export function getTypeDefV2 (type: string, name?: string): TypeDef {
+//   const metaName = new MetadataName(JSON.parse(type.substr(3)));
+//   return _getTypeDefV2(metaName);
+// }
+//
+// export function _getTypeDefV2 (metaName: MetadataName): TypeDef {
+//   // const sub = getTypeDef(metaName.value);
+//
+//   const value: TypeDef = {
+//     info: TypeDefInfo.TypeV2,
+//     name,
+//     type: metaName.toString()
+//   };
+//
+//   if (metaName.type === 'Metadata$Array' || metaName.type === 'Metadata$Vector') {
+//     value.info = TypeDefInfo.Vector;
+//     value.sub = _getTypeDefV2(metaName.value as Metadata$Vector);
+//   } else if (metaName.type === 'Metadata$Tuple') {
+//     value.info = TypeDefInfo.Tuple;
+//     value.sub = (metaName.value as Metadata$Tuple).map((inner) => _getTypeDefV2(inner));
+//   } else if (metaName.type === 'Metadata$Option') {
+//     value.info = TypeDefInfo.Option;
+//     value.sub = _getTypeDefV2(metaName.value as Metadata$Option);
+//   } else if (metaName.type === 'Metadata$Compact') {
+//     value.info = TypeDefInfo.Compact;
+//     value.sub = _getTypeDefV2(metaName.value as Metadata$Compact);
+//   }
+//   return value;
+// }
+//
+// export function getTypeDef (_type: Text | string, name?: string): TypeDef {
+//   const type = _type.toString().trim();
+//   if (isV2Type(type)) {
+//     return getTypeDefV2(type, name);
+//   } else {
+//     return getTypeDefV0(type, name);
+//   }
+// }
 
 // Returns the type Class for construction
 export function getTypeClass (value: TypeDef): Constructor {
@@ -160,13 +258,11 @@ export function getTypeClass (value: TypeDef): Constructor {
     );
   }
 
-  // NOTE We only load types via require - we have to avoid circular deps between type usage and creation
-  const Types = require('../index');
-  const Type = registry.get(value.type) || Types[value.type];
+  const Type = registry.get(value.type);
 
   assert(Type, `Unable to determine type from '${value.type}'`);
 
-  return Type;
+  return Type as Constructor;
 }
 
 export function createClass (type: Text | string, value?: any): Constructor {

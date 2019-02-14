@@ -10,12 +10,13 @@ import AccountId from './AccountId';
 import Event from './Event';
 import EventRecord from './EventRecord';
 import Metadata from './Metadata';
+import MetadataV0 from './Metadata/v0/index';
 import metadataRpc from './Metadata/v0/static';
 
 describe('EventRecord', () => {
   beforeEach(() => {
     Event.injectMetadata(
-      new Metadata(metadataRpc).asV0
+      new Metadata(metadataRpc).asV0 as MetadataV0
     );
   });
 

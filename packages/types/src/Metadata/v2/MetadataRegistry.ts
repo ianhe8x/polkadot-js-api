@@ -48,9 +48,21 @@ export class MetadataName extends EnumType<Metadata$Unknown | Metadata$Custom | 
   get name (): string {
     return (this.raw as any).name || this.type;
   }
+
+  toString (): string {
+    return this.value.toString();
+  }
+
+  toJSON (): any {
+    return this.toString();
+  }
 }
 
-export class Metadata$Unknown extends Null {}
+export class Metadata$Unknown extends Null {
+  toString (): string {
+    return 'Metadata$Unknown';
+  }
+}
 export class Metadata$Custom extends Tuple {
   constructor (value: any) {
     super([
@@ -62,7 +74,11 @@ export class Metadata$Custom extends Tuple {
   get name (): string {
     return this[1].toString();
   }
+  toString (): string {
+    return `${this[0].toString()}#${this[1].toString()}`;
+  }
 }
+
 export class Metadata$CustomWithGenerics extends Tuple {
   constructor (value: any) {
     super([
@@ -75,7 +91,22 @@ export class Metadata$CustomWithGenerics extends Tuple {
   get name (): string {
     return this[1].toString();
   }
+
+  toString (): string {
+    let subType = '';
+    const generics = this[2] as Vector<MetadataName>;
+    if (generics.length === 1) {
+      subType = generics[0].toString();
+    } else if (this.length > 1) {
+      subType = generics[0].toString();
+      for (let i = 1; i < generics.length; i++) {
+        subType = `${subType},${generics[i].toString()}`;
+      }
+    }
+    return `${this[0].toString()}#${this[1].toString()}<${subType}>`;
+  }
 }
+
 export class Metadata$Array extends Tuple {
   constructor (value: any) {
     super([
@@ -83,10 +114,34 @@ export class Metadata$Array extends Tuple {
       MetadataName
     ], value);
   }
+  toString (): string {
+    return `Vec<${this[1].toString()}>`;
+  }
 }
-export class Metadata$Vector extends MetadataName {}
-export class Metadata$Tuple extends Vector.with(MetadataName) {}
-export class Metadata$Option extends MetadataName {}
+export class Metadata$Vector extends MetadataName {
+  toString (): string {
+    return `Vec<${this.value.toString()}>`;
+  }
+}
+export class Metadata$Tuple extends Vector.with(MetadataName) {
+  toString (): string {
+    let subType = '';
+    if (this.length === 1) {
+      subType = this[0].toString();
+    } else if (this.length > 1) {
+      subType = this[0].toString();
+      for (let i = 1; i < this.length; i++) {
+        subType = `${subType},${this[i].toString()}`;
+      }
+    }
+    return `(${subType})`;
+  }
+}
+export class Metadata$Option extends MetadataName {
+  toString (): string {
+    return `Option<${this.value.toString()}>`;
+  }
+}
 export class Metadata$Result extends Tuple {
   constructor (value: any) {
     super([
@@ -94,28 +149,115 @@ export class Metadata$Result extends Tuple {
       MetadataName
     ], value);
   }
+  toString (): string {
+    return `Result<${this[0].toString()},${this[1].toString()}>`;
+  }
 }
-export class Metadata$Compact extends MetadataName {}
-export class Metadata$Str extends Null {}
-export class Metadata$Unit extends Null {}
-export class Metadata$Bool extends Null {}
-export class Metadata$Usize extends Null {}
-export class Metadata$Isize extends Null {}
-export class Metadata$U8 extends Null {}
-export class Metadata$I8 extends Null {}
-export class Metadata$U16 extends Null {}
-export class Metadata$I16 extends Null {}
-export class Metadata$U32 extends Null {}
-export class Metadata$I32 extends Null {}
-export class Metadata$U64 extends Null {}
-export class Metadata$I64 extends Null {}
-export class Metadata$U128 extends Null {}
-export class Metadata$I128 extends Null {}
-export class Metadata$U256 extends Null {}
-export class Metadata$U512 extends Null {}
-export class Metadata$H160 extends Null {}
-export class Metadata$H256 extends Null {}
-export class Metadata$H512 extends Null {}
+export class Metadata$Compact extends MetadataName {
+  toString (): string {
+    return `Compact<${this.value.toString()}>`;
+  }
+}
+export class Metadata$Str extends Null {
+  toString (): string {
+    return 'Metadata$Str';
+  }
+}
+export class Metadata$Unit extends Null {
+  toString (): string {
+    return 'Metadata$Unit';
+  }
+}
+export class Metadata$Bool extends Null {
+  toString (): string {
+    return 'Metadata$Bool';
+  }
+}
+export class Metadata$Usize extends Null {
+  toString (): string {
+    return 'Metadata$Usize';
+  }
+}
+export class Metadata$Isize extends Null {
+  toString (): string {
+    return 'Metadata$Isize';
+  }
+}
+export class Metadata$U8 extends Null {
+  toString (): string {
+    return 'Metadata$U8';
+  }
+}
+export class Metadata$I8 extends Null {
+  toString (): string {
+    return 'Metadata$I8';
+  }
+}
+export class Metadata$U16 extends Null {
+  toString (): string {
+    return 'Metadata$U16';
+  }
+}
+export class Metadata$I16 extends Null {
+  toString (): string {
+    return 'Metadata$I16';
+  }
+}
+export class Metadata$U32 extends Null {
+  toString (): string {
+    return 'Metadata$U32';
+  }
+}
+export class Metadata$I32 extends Null {
+  toString (): string {
+    return 'Metadata$I32';
+  }
+}
+export class Metadata$U64 extends Null {
+  toString (): string {
+    return 'Metadata$U64';
+  }
+}
+export class Metadata$I64 extends Null {
+  toString (): string {
+    return 'Metadata$I64';
+  }
+}
+export class Metadata$U128 extends Null {
+  toString (): string {
+    return 'Metadata$U128';
+  }
+}
+export class Metadata$I128 extends Null {
+  toString (): string {
+    return 'Metadata$I128';
+  }
+}
+export class Metadata$U256 extends Null {
+  toString (): string {
+    return 'Metadata$U256';
+  }
+}
+export class Metadata$U512 extends Null {
+  toString (): string {
+    return 'Metadata$U512';
+  }
+}
+export class Metadata$H160 extends Null {
+  toString (): string {
+    return 'Metadata$H160';
+  }
+}
+export class Metadata$H256 extends Null {
+  toString (): string {
+    return 'Metadata$H256';
+  }
+}
+export class Metadata$H512 extends Null {
+  toString (): string {
+    return 'Metadata$H512';
+  }
+}
 
 export class FieldName$Unnamed extends U16 {}
 export class FieldName$Named extends Text {}
@@ -169,12 +311,15 @@ export class TypeMetadata extends Struct {
       kind: TypeMetadataKind
     }, value);
   }
+
+  get name (): MetadataName {
+    return this.get('name') as MetadataName;
+  }
+
+  get kind (): TypeMetadataKind {
+    return this.get('kind') as TypeMetadataKind;
+  }
 }
 
-export default class MetadataRegistry extends Struct {
-  constructor (value?: any) {
-    super({
-      list: Vector.with(TypeMetadata)
-    }, value);
-  }
+export default class MetadataRegistry extends Vector.with(TypeMetadata) {
 }

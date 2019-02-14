@@ -61,7 +61,7 @@ function callToMethodFunction (prefix: string, section: number, id: number, call
     name: call.name,
     arguments: call.args.map(arg => new FunctionArgumentMetadata({
       name: arg.name,
-      type: arg.type.name
+      type: arg.type.toString()
     })),
     documentation: call.docs
   });
@@ -73,7 +73,8 @@ function callsToMethods (prefix: string, section: number, calls: Vector<Metadata
   let index = 0;
   for (const call of calls) {
     const func = callToMethodFunction(prefix, section, index, call);
-    methods[func.name.toString()] = func;
+    const funcName = stringCamelCase(call.name.toString());
+    methods[funcName] = func;
     ++index;
   }
   return methods;
@@ -83,8 +84,8 @@ function fromMetadataV2 (metadata: MetadataV2): ModulesWithMethods {
   const result = { ...extrinsics };
   let index = 0;
   for (const m of metadata.modules) {
-    const prefix = m.prefix.toString();
-    const methods = callsToMethods(m.prefix.toString(), index, m.calls.unwrap());
+    const prefix = stringCamelCase(m.prefix.toString());
+    const methods = callsToMethods(prefix, index, m.calls.isNone ? new Vector(MetadataCall, []) : m.calls.unwrap());
     result[stringCamelCase(prefix)] = methods;
     ++index;
   }
@@ -99,9 +100,8 @@ function fromMetadataV2 (metadata: MetadataV2): ModulesWithMethods {
  * @param metadata - The metadata to extend the storage object against.
  */
 export default function fromMetadata (metadata: Metadata): ModulesWithMethods {
-  const v0 = metadata.asV0;
-  if (v0) {
-    return fromMetadataV0(v0);
+  if (!metadata.version) {
+    return fromMetadataV0(metadata as unknown as MetadataV0);
   }
   const v2 = metadata.asV2;
   if (v2) {

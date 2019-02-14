@@ -4,7 +4,7 @@
 
 import { MetadataInterface } from './types';
 
-import { assert, isUndefined } from '@polkadot/util';
+import { isUndefined } from '@polkadot/util';
 
 import EnumType from '../codec/EnumType';
 import Struct from '../codec/Struct';

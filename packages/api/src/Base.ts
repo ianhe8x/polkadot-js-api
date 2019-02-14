@@ -26,7 +26,7 @@ import storageFromMeta from '@polkadot/storage/fromMetadata';
 import registry from '@polkadot/types/codec/typeRegistry';
 import { Event, Hash, Metadata, Method, RuntimeVersion } from '@polkadot/types/index';
 import { MethodFunction, ModulesWithMethods } from '@polkadot/types/Method';
-import { StorageFunction } from '@polkadot/types/StorageKey';
+import { StorageFunction } from '@polkadot/types/default/StorageKey';
 import { assert, compactStripLength, isFunction, isObject, isUndefined, logger, u8aToHex } from '@polkadot/util';
 
 import SubmittableExtrinsic from './SubmittableExtrinsic';
@@ -348,6 +348,10 @@ export default abstract class ApiBase<CodecResult, SubscriptionResult> implement
         this._runtimeVersion = this._options.source.runtimeVersion;
         this._genesisHash = this._options.source.genesisHash;
       }
+      if (this._runtimeMetadata.asV2) {
+        registry.register(this._runtimeMetadata.asV2.typeRegistry);
+      }
+
 
       const extrinsics = extrinsicsFromMeta(this.runtimeMetadata);
       const storage = storageFromMeta(this.runtimeMetadata.asV0);
