@@ -2,14 +2,16 @@
 // This software may be modified and distributed under the terms
 // of the Apache-2.0 license. See the LICENSE file for details.
 
-import { AnyU8a, Codec, Constructor } from './types';
+import { AnyU8a, Codec, Constructor } from '../types';
 
 import { assert, isHex, isObject, isU8a, hexToU8a } from '@polkadot/util';
 
-import { getTypeDef, getTypeClass } from './codec/createType';
-import Struct from './codec/Struct';
-import U8aFixed from './codec/U8aFixed';
-import { FunctionMetadata, FunctionArgumentMetadata } from './Metadata/v0/Modules';
+import Struct from '../codec/Struct';
+import U8aFixed from '../codec/U8aFixed';
+import {
+  FunctionMetadata as FunctionMetadataV2,
+  FunctionArgumentMetadata as FunctionArgumentMetadataV2
+} from '../Metadata/v2/Modules';
 
 interface ArgsDef {
   [index: string]: Constructor;
@@ -22,13 +24,14 @@ interface DecodeMethodInput {
 
 interface DecodedMethod extends DecodeMethodInput {
   argsDef: ArgsDef;
-  meta: FunctionMetadata;
+  meta: FunctionMetadataV2;
 }
 
 export interface MethodFunction {
   (...args: any[]): Method;
+
   callIndex: Uint8Array;
-  meta: FunctionMetadata;
+  meta: FunctionMetadataV2;
   method: string;
   section: string;
   toJSON: () => any;
@@ -66,10 +69,10 @@ export class MethodIndex extends U8aFixed {
  * Extrinsic function descriptor, as defined in
  * {@link https://github.com/paritytech/wiki/blob/master/Extrinsic.md#the-extrinsic-format-for-node}.
  */
-export default class Method extends Struct {
-  protected _meta: FunctionMetadata;
+export class Method extends Struct {
+  protected _meta: FunctionMetadataV2;
 
-  constructor (value: any, meta?: FunctionMetadata) {
+  constructor (value: any, meta?: FunctionMetadataV2) {
     const decoded = Method.decodeMethod(value, meta);
 
     super({
@@ -90,7 +93,7 @@ export default class Method extends Struct {
    * @param _meta - Metadata to use, so that `injectMethods` lookup is not
    * necessary.
    */
-  private static decodeMethod (value: DecodedMethod | Uint8Array | string, _meta?: FunctionMetadata): DecodedMethod {
+  private static decodeMethod (value: DecodedMethod | Uint8Array | string, _meta?: FunctionMetadataV2): DecodedMethod {
     if (isHex(value)) {
       return Method.decodeMethod(hexToU8a(value), _meta);
     } else if (isU8a(value)) {
@@ -131,13 +134,13 @@ export default class Method extends Struct {
     return {
       args: new Uint8Array(),
       argsDef: {},
-      meta: new FunctionMetadata(),
+      meta: new FunctionMetadataV2(),
       callIndex: new Uint8Array([255, 255])
     };
   }
 
   // If the extrinsic function has an argument of type `Origin`, we ignore it
-  static filterOrigin (meta?: FunctionMetadata): Array<FunctionArgumentMetadata> {
+  static filterOrigin (meta?: FunctionMetadataV2): Array<FunctionArgumentMetadataV2> {
     // FIXME should be `arg.type !== Origin`, but doesn't work...
     return meta
       ? meta.arguments.filter(({ type }) =>
@@ -165,12 +168,12 @@ export default class Method extends Struct {
    *
    * @param meta - The function metadata used to get the definition.
    */
-  private static getArgsDef (meta: FunctionMetadata): ArgsDef {
+  private static getArgsDef (meta: FunctionMetadataV2): ArgsDef {
     return Method.filterOrigin(meta).reduce((result, { name, type }) => {
-      const Type = getTypeClass(
-        getTypeDef(type)
-      );
-      result[name.toString()] = Type;
+      // const Type = getTypeClass(
+      //   getTypeDef(type)
+      // );
+      // result[name.toString()] = Type;
 
       return result;
     }, {} as ArgsDef);
@@ -227,7 +230,7 @@ export default class Method extends Struct {
   /**
    * @description The [[FunctionMetadata]]
    */
-  get meta (): FunctionMetadata {
+  get meta (): FunctionMetadataV2 {
     return this._meta;
   }
 }

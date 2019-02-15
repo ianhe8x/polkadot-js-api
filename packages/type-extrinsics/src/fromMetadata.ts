@@ -46,7 +46,7 @@ function fromMetadataV0 (metadata: MetadataV0): ModulesWithMethods {
       // extrinsics.balances.set_balance -> extrinsics.balances.setBalance
       const funcName = stringCamelCase(funcMeta.name.toString());
 
-      newModule[funcName] = createUnchecked(prefix, funcName, index, funcMeta);
+      newModule[funcName] = createUnchecked.v0(prefix, funcName, index, funcMeta);
 
       return newModule;
     }, {} as Methods);
@@ -66,7 +66,7 @@ function callToMethodFunction (prefix: string, section: number, id: number, call
     })),
     documentation: call.docs
   });
-  return createUnchecked(prefix, name, section, meta);
+  return createUnchecked.v2(prefix, name, section, meta);
 }
 
 function callsToMethods (prefix: string, section: number, calls: Vector<MetadataCall>): Methods {
