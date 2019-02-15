@@ -8,7 +8,7 @@ import { AnyU8a } from '../types';
 
 import U8a from './U8a';
 
-type BitLength = 8 | 16 | 32 | 64 | 128 | 256 | 512;
+type BitLength = 8 | 16 | 32 | 64 | 128 | 160 | 256 | 512;
 
 /**
  * @name U8aFixed
@@ -52,4 +52,12 @@ export default class U8aFixed extends U8a {
   bitLength () {
     return this.length * 8;
   }
+}
+
+export function deriveU8aFixed (length: BitLength): any {
+  return class extends U8aFixed {
+    constructor (value?: AnyU8a) {
+      super(value, length);
+    }
+  };
 }

@@ -48,6 +48,11 @@ export class MetadataName extends EnumType<Metadata$Unknown | Metadata$Custom | 
   get name (): string {
     return (this.raw as any).name || this.type;
   }
+
+  toString (): string {
+    // need prefix so that it won't be taken as a Struct
+    return `#V2${JSON.stringify(this.toJSON())}`;
+  }
 }
 
 export class Metadata$Unknown extends Null {}
@@ -63,6 +68,7 @@ export class Metadata$Custom extends Tuple {
     return this[1].toString();
   }
 }
+
 export class Metadata$CustomWithGenerics extends Tuple {
   constructor (value: any) {
     super([
@@ -76,6 +82,7 @@ export class Metadata$CustomWithGenerics extends Tuple {
     return this[1].toString();
   }
 }
+
 export class Metadata$Array extends Tuple {
   constructor (value: any) {
     super([
@@ -169,12 +176,17 @@ export class TypeMetadata extends Struct {
       kind: TypeMetadataKind
     }, value);
   }
+
+  get name () {
+    return this.get('name');
+  }
+
+  get kind () {
+    return this.get('kind');
+  }
 }
 
-export default class MetadataRegistry extends Struct {
-  constructor (value?: any) {
-    super({
-      list: Vector.with(TypeMetadata)
-    }, value);
-  }
+// export default Vector.with(TypeMetadata);
+
+export default class MetadataRegistry extends Vector.with(TypeMetadata) {
 }

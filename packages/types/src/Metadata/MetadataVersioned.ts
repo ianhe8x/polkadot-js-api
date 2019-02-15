@@ -4,11 +4,11 @@
 
 import { MetadataInterface } from './types';
 
-import { assert, isUndefined } from '@polkadot/util';
+import { isUndefined } from '@polkadot/util';
 
 import EnumType from '../codec/EnumType';
 import Struct from '../codec/Struct';
-import Null from '../Null';
+import Null from '../default/Null';
 import MetadataV0 from './v0';
 import MetadataV1 from './v1';
 import MetadataV2 from './v2';

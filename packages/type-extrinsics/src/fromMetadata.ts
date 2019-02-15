@@ -2,8 +2,7 @@
 // This software may be modified and distributed under the terms
 // of the Apache-2.0 license. See the LICENSE file for details.
 
-import { RuntimeModuleMetadata } from '@polkadot/types/Metadata/v0/Modules';
-import { FunctionArgumentMetadata, FunctionMetadata } from '@polkadot/types/Metadata/v2/Modules';
+import { RuntimeModuleMetadata, FunctionMetadata, FunctionArgumentMetadata } from '@polkadot/types/Metadata/v0/Modules';
 import { Methods, ModulesWithMethods, MethodFunction } from '@polkadot/types/Method';
 import Metadata from '@polkadot/types/Metadata';
 import MetadataV0 from '@polkadot/types/Metadata/v0';
@@ -46,7 +45,7 @@ function fromMetadataV0 (metadata: MetadataV0): ModulesWithMethods {
       // extrinsics.balances.set_balance -> extrinsics.balances.setBalance
       const funcName = stringCamelCase(funcMeta.name.toString());
 
-      newModule[funcName] = createUnchecked.v0(prefix, funcName, index, funcMeta);
+      newModule[funcName] = createUnchecked(prefix, funcName, index, funcMeta);
 
       return newModule;
     }, {} as Methods);
@@ -62,11 +61,11 @@ function callToMethodFunction (prefix: string, section: number, id: number, call
     name: call.name,
     arguments: call.args.map(arg => new FunctionArgumentMetadata({
       name: arg.name,
-      type: arg.type
+      type: arg.type.toString()
     })),
     documentation: call.docs
   });
-  return createUnchecked.v2(prefix, name, section, meta);
+  return createUnchecked(prefix, name, section, meta);
 }
 
 function callsToMethods (prefix: string, section: number, calls: Vector<MetadataCall>): Methods {

@@ -2,7 +2,12 @@
 // This software may be modified and distributed under the terms
 // of the Apache-2.0 license. See the LICENSE file for details.
 
+import { KeyringPair } from '@polkadot/keyring/types';
 import BN from 'bn.js';
+import { FunctionMetadata } from './Metadata/v0/Modules';
+import Method from './Method';
+import { Address, ExtrinsicSignature } from './default/index';
+import { SignatureOptions } from './default/ExtrinsicSignature';
 
 export type CodecArg = Codec | BN | Boolean | String | Uint8Array | boolean | number | string | undefined | CodecArgArray | CodecArgObject;
 
@@ -71,3 +76,18 @@ export type TypeDef = { [index: string]: Codec };
 export type RegistryTypes = {
   [name: string]: Constructor | string | { [name: string]: string }
 };
+
+export interface ExtrinsicLike extends Codec {
+  args: Array<Codec>;
+  callIndex: Uint8Array;
+  data: Uint8Array;
+  encodedLength: number;
+  hash: any;
+  isSigned: boolean;
+  length: number;
+  meta: FunctionMetadata;
+  method: Method;
+  signature: ExtrinsicSignature;
+  addSignature (signer: Address | Uint8Array, signature: Uint8Array, nonce: AnyNumber, era?: Uint8Array): ExtrinsicLike;
+  sign (account: KeyringPair, options: SignatureOptions): ExtrinsicLike;
+}

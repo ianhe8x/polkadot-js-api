@@ -13,6 +13,13 @@ import Tuple from './Tuple';
 import UInt from './UInt';
 import Vector from './Vector';
 import registry from './typeRegistry';
+import {
+  Metadata$Compact,
+  Metadata$Option,
+  Metadata$Tuple,
+  Metadata$Vector,
+  MetadataName
+} from '../Metadata/v2/MetadataRegistry';
 
 export enum TypeDefInfo {
   Compact,
@@ -20,7 +27,8 @@ export enum TypeDefInfo {
   Plain,
   Struct,
   Tuple,
-  Vector
+  Vector,
+  TypeV2
 }
 
 export type TypeDef = {
@@ -49,25 +57,38 @@ export function typeSplit (type: string): Array<string> {
         break;
 
       // inc struct depth, start found
-      case '{': sDepth++; break;
+      case '{':
+        sDepth++;
+        break;
 
       // dec struct depth, end found
-      case '}': sDepth--; break;
+      case '}':
+        sDepth--;
+        break;
 
       // inc tuple depth, start found
-      case '(': tDepth++; break;
+      case '(':
+        tDepth++;
+        break;
 
       // dec tuple depth, end found
-      case ')': tDepth--; break;
+      case ')':
+        tDepth--;
+        break;
 
       // inc compact/vec depth, start found
-      case '<': vDepth++; break;
+      case '<':
+        vDepth++;
+        break;
 
       // dec compact/vec depth, end found
-      case '>': vDepth--; break;
+      case '>':
+        vDepth--;
+        break;
 
       // normal character
-      default: break;
+      default:
+        break;
     }
   }
 
@@ -79,8 +100,12 @@ export function typeSplit (type: string): Array<string> {
   return result;
 }
 
-export function getTypeDef (_type: Text | string, name?: string): TypeDef {
-  const type = _type.toString().trim();
+function isV2Type (type: string) {
+  return type.startsWith('#V2');
+}
+
+// TODO: support V2
+export function getTypeDefV0 (type: string, name?: string): TypeDef {
   const value: TypeDef = {
     info: TypeDefInfo.Plain,
     name,
@@ -122,6 +147,46 @@ export function getTypeDef (_type: Text | string, name?: string): TypeDef {
   return value;
 }
 
+export function getTypeDefV2 (type: string, name?: string): TypeDef {
+  const metaName = new MetadataName(JSON.parse(type.substr(3)));
+  return _getTypeDefV2(metaName);
+}
+
+export function _getTypeDefV2 (metaName: MetadataName): TypeDef {
+  // const sub = getTypeDef(metaName.value);
+
+  const value: TypeDef = {
+    info: TypeDefInfo.TypeV2,
+    name,
+    type: metaName.toString()
+  };
+
+  if (metaName.type === 'Metadata$Array' || metaName.type === 'Metadata$Vector') {
+    value.info = TypeDefInfo.Vector;
+    value.sub = _getTypeDefV2(metaName.value as Metadata$Vector);
+  } else if (metaName.type === 'Metadata$Tuple') {
+    value.info = TypeDefInfo.Tuple;
+    value.sub = (metaName.value as Metadata$Tuple).map((inner) => _getTypeDefV2(inner));
+  } else if (metaName.type === 'Metadata$Option') {
+    value.info = TypeDefInfo.Option;
+    value.sub = _getTypeDefV2(metaName.value as Metadata$Option);
+  } else if (metaName.type === 'Metadata$Compact') {
+    value.info = TypeDefInfo.Compact;
+    value.sub = _getTypeDefV2(metaName.value as Metadata$Compact);
+  }
+  return value;
+}
+
+export function getTypeDef (_type: Text | string, name?: string): TypeDef {
+  const type = _type.toString().trim();
+  if (isV2Type(type)) {
+    return getTypeDefV2(type, name);
+  } else {
+    return getTypeDefV0(type, name);
+  }
+}
+
+// TODO: support V2
 // Returns the type Class for construction
 export function getTypeClass (value: TypeDef): Constructor {
   if (value.info === TypeDefInfo.Compact) {
@@ -160,13 +225,11 @@ export function getTypeClass (value: TypeDef): Constructor {
     );
   }
 
-  // NOTE We only load types via require - we have to avoid circular deps between type usage and creation
-  const Types = require('../index');
-  const Type = registry.get(value.type) || Types[value.type];
+  const Type = registry.get(value.type);
 
   assert(Type, `Unable to determine type from '${value.type}'`);
 
-  return Type;
+  return Type as Constructor;
 }
 
 export function createClass (type: Text | string, value?: any): Constructor {
