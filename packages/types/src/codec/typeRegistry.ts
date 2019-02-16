@@ -4,7 +4,7 @@
 
 import { Constructor, RegistryTypes } from '../types';
 
-import Default = require('../default');
+const Default = require('../default');
 
 import { isFunction, isString, isUndefined } from '@polkadot/util';
 
@@ -78,7 +78,7 @@ export class TypeRegistry {
   }
 
   private getStructTypeClass (typeDef: TypeMetadataKind$Primitive | TypeMetadataKind$Struct | TypeMetadataKind$Enum): Constructor {
-    if (typeDef instanceof TypeMetadataKind$Struct)
+    if (typeDef instanceof TypeMetadataKind$Struct) {}
   }
 
   private registerTypeMetadata (obj: MetadataRegistry) {

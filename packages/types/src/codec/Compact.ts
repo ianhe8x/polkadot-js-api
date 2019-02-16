@@ -10,7 +10,7 @@ import { AnyNumber, Codec, Constructor } from '../types';
 import { UIntBitLength } from './AbstractInt';
 import Base from './Base';
 import UInt from './UInt';
-import Moment from '../Moment';
+import { Moment } from '../index';
 
 /**
  * @name Compact
