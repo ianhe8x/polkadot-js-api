@@ -8,7 +8,7 @@ import { AnyNumber, AnyU8a } from '../types';
 import Struct from '../codec/Struct';
 import Address from './Address';
 import ExtrinsicEra from './ExtrinsicEra';
-import Method from './Method';
+import Method from '../Method';
 import Nonce from './NonceCompact';
 import RuntimeVersion from './RuntimeVersion';
 import Signature from './Signature';

@@ -5,10 +5,10 @@
 import EnumType from '../../codec/EnumType';
 import Struct from '../../codec/Struct';
 import Vector from '../../codec/Vector';
-import Null from '../../Null';
+import Null from '../../default/Null';
 import Tuple from '../../codec/Tuple';
-import Text from '../../Text';
-import U16 from '../../U16';
+import Text from '../../default/Text';
+import U16 from '../../default/U16';
 
 export class MetadataName extends EnumType<Metadata$Unknown | Metadata$Custom | Metadata$CustomWithGenerics | Metadata$Array | Metadata$Vector | Metadata$Tuple | Metadata$Option | Metadata$Result | Metadata$Compact | Metadata$Str | Metadata$Unit | Metadata$Bool | Metadata$Usize | Metadata$Isize | Metadata$U8 | Metadata$I8 | Metadata$U16 | Metadata$I16 | Metadata$U32 | Metadata$I32 | Metadata$U64 | Metadata$I64 | Metadata$U128 | Metadata$I128 | Metadata$U256 | Metadata$U512 | Metadata$H160 | Metadata$H256 | Metadata$H512> {
   constructor (value: any) {
@@ -177,16 +177,14 @@ export class TypeMetadata extends Struct {
     }, value);
   }
 
-  get name () {
-    return this.get('name');
+  get name (): MetadataName {
+    return this.get('name') as MetadataName;
   }
 
-  get kind () {
-    return this.get('kind');
+  get kind (): TypeMetadataKind {
+    return this.get('kind') as TypeMetadataKind;
   }
 }
-
-// export default Vector.with(TypeMetadata);
 
 export default class MetadataRegistry extends Vector.with(TypeMetadata) {
 }

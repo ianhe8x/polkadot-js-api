@@ -3,14 +3,15 @@
 // of the Apache-2.0 license. See the LICENSE file for details.
 
 import { KeyringPair } from '@polkadot/keyring/types';
-import { AnyNumber, AnyU8a, Codec, Constructor, ExtrinsicLike } from './types';
+import { AnyNumber, AnyU8a, Codec, Constructor, ExtrinsicLike, AddressLike } from '../types';
 
-import typeRegistry from './codec/typeRegistry';
-import Address from './Address';
-import ExtrinsicSignature, { SignatureOptions } from './ExtrinsicSignature';
-import Hash from './default/Hash';
-import { FunctionMetadata } from './Metadata/v0/Modules';
-import Method from './Method';
+import typeRegistry from '../codec/typeRegistry';
+import ExtrinsicSignature, { SignatureOptions } from '../default/ExtrinsicSignature';
+import Hash from '../default/Hash';
+import { FunctionMetadata } from '../Metadata/v0/Modules';
+import Method from '../Method';
+import { BaseProxy } from './base';
+import Struct from '../codec/Struct';
 
 type ExtrinsicValue = {
   method?: Method
@@ -26,10 +27,11 @@ type ExtrinsicValue = {
  * - signed, to create a transaction
  * - left as is, to create an inherent
  */
-export default class Extrinsic implements ExtrinsicLike {
+export default class Extrinsic extends BaseProxy<ExtrinsicLike> implements ExtrinsicLike {
   protected targetCls: Constructor;
   protected target: ExtrinsicLike;
   constructor (value?: ExtrinsicValue | AnyU8a | Method) {
+    super();
     this.targetCls = typeRegistry.getOrThrow('Extrinsic');
     this.target = new this.targetCls(value) as ExtrinsicLike;
   }
@@ -100,14 +102,14 @@ export default class Extrinsic implements ExtrinsicLike {
   /**
    * @description The [[ExtrinsicSignature]]
    */
-  get signature (): ExtrinsicSignature {
+  get signature (): Struct {
     return this.target.signature;
   }
 
   /**
    * @description Add an [[ExtrinsicSignature]] to the extrinsic (already generated)
    */
-  addSignature (signer: Address | Uint8Array, signature: Uint8Array, nonce: AnyNumber, era?: Uint8Array): ExtrinsicLike {
+  addSignature (signer: AddressLike | Uint8Array, signature: Uint8Array, nonce: AnyNumber, era?: Uint8Array): ExtrinsicLike {
     return this.target.addSignature(signer, signature, nonce, era);
   }
 
@@ -118,29 +120,4 @@ export default class Extrinsic implements ExtrinsicLike {
     return this.target.sign(account, options);
   }
 
-  /**
-   * @description Returns a hex string representation of the value
-   */
-  toHex (): string {
-    return this.target.toHex();
-  }
-
-  /**
-   * @description Converts the Object to JSON, typically used for RPC transfers
-   */
-  toJSON (): any {
-    return this.target.toJSON();
-  }
-
-  /**
-   * @description Encodes the value as a Uint8Array as per the parity-codec specifications
-   * @param isBare true when the value has none of the type-specific prefixes (internal)
-   */
-  toU8a (isBare?: boolean): Uint8Array {
-    return this.target.toU8a(isBare);
-  }
-
-  eq (other?: any): boolean {
-    return this.target.eq(other);
-  }
 }

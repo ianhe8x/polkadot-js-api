@@ -4,7 +4,8 @@
 
 import { KeyringPair } from '@polkadot/keyring/types';
 import { Struct, Vector } from '@polkadot/types/codec';
-import { AccountId, Address, Extrinsic, ExtrinsicStatus, EventRecord, Hash, Index, Method, RuntimeVersion, SignedBlock, Text } from '@polkadot/types/index';
+import { Address, Extrinsic, Method } from '@polkadot/types/index';
+import { AccountId, ExtrinsicStatus, EventRecord, Hash, Index, RuntimeVersion, SignedBlock, Text } from '@polkadot/types/default';
 import { AnyNumber, AnyU8a, CodecCallback } from '@polkadot/types/types';
 import { ApiInterface$Rx, ApiType, OnCallDefinition, Signer } from './types';
 

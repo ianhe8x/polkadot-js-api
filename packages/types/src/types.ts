@@ -6,7 +6,7 @@ import { KeyringPair } from '@polkadot/keyring/types';
 import BN from 'bn.js';
 import { FunctionMetadata } from './Metadata/v0/Modules';
 import Method from './Method';
-import { Address, ExtrinsicSignature } from './default/index';
+import Struct from './codec/Struct';
 import { SignatureOptions } from './default/ExtrinsicSignature';
 
 export type CodecArg = Codec | BN | Boolean | String | Uint8Array | boolean | number | string | undefined | CodecArgArray | CodecArgObject;
@@ -87,7 +87,12 @@ export interface ExtrinsicLike extends Codec {
   length: number;
   meta: FunctionMetadata;
   method: Method;
-  signature: ExtrinsicSignature;
-  addSignature (signer: Address | Uint8Array, signature: Uint8Array, nonce: AnyNumber, era?: Uint8Array): ExtrinsicLike;
+  signature: Struct;
+  addSignature (signer: AddressLike | Uint8Array, signature: Uint8Array, nonce: AnyNumber, era?: Uint8Array): ExtrinsicLike;
   sign (account: KeyringPair, options: SignatureOptions): ExtrinsicLike;
+}
+
+export interface AddressLike extends Codec {
+  encodedLength: number;
+  rawLength: number;
 }
