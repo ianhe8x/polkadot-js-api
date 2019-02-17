@@ -3,18 +3,18 @@
 // of the Apache-2.0 license. See the LICENSE file for details.
 
 import { KeyringPair } from '@polkadot/keyring/types';
-import { AnyNumber, AnyU8a, Codec } from '../types';
+import { AnyNumber, AnyU8a, Codec } from './types';
 
 import { isHex, isU8a, u8aToHex, u8aToU8a } from '@polkadot/util';
 import { blake2AsU8a } from '@polkadot/util-crypto';
 
-import Compact from '../codec/Compact';
-import Struct from '../codec/Struct';
-import Address from '../Address';
-import ExtrinsicSignature, { SignatureOptions } from '../ExtrinsicSignature';
-import Hash from '../Hash';
-import { FunctionMetadata } from '../Metadata/v0/Modules';
-import Method from '../Method';
+import Compact from './codec/Compact';
+import Struct from './codec/Struct';
+import Address from './Address';
+import ExtrinsicSignature, { SignatureOptions } from './ExtrinsicSignature';
+import Hash from './Hash';
+import { FunctionMetadata } from './Metadata/v0/Modules';
+import Method from './Method';
 
 type ExtrinsicValue = {
   method?: Method

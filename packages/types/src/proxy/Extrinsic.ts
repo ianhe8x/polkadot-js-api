@@ -6,8 +6,8 @@ import { KeyringPair } from '@polkadot/keyring/types';
 import { AnyNumber, AnyU8a, Codec, Constructor, ExtrinsicLike, AddressLike } from '../types';
 
 import typeRegistry from '../codec/typeRegistry';
-import ExtrinsicSignature, { SignatureOptions } from '../default/ExtrinsicSignature';
-import Hash from '../default/Hash';
+import ExtrinsicSignature, { SignatureOptions } from '../ExtrinsicSignature';
+import Hash from '../Hash';
 import { FunctionMetadata } from '../Metadata/v0/Modules';
 import Method from '../Method';
 import { BaseProxy } from './base';

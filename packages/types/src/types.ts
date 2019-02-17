@@ -7,7 +7,7 @@ import BN from 'bn.js';
 import { FunctionMetadata } from './Metadata/v0/Modules';
 import Method from './Method';
 import Struct from './codec/Struct';
-import { SignatureOptions } from './default/ExtrinsicSignature';
+import { SignatureOptions } from './ExtrinsicSignature';
 
 export type CodecArg = Codec | BN | Boolean | String | Uint8Array | boolean | number | string | undefined | CodecArgArray | CodecArgObject;
 

@@ -2,11 +2,11 @@
 // This software may be modified and distributed under the terms
 // of the Apache-2.0 license. See the LICENSE file for details.
 
-import { AnyU8a } from '../types';
+import { AnyU8a } from './types';
 
-import Option from '../codec/Option';
-import Struct from '../codec/Struct';
-import Tuple from '../codec/Tuple';
+import Option from './codec/Option';
+import Struct from './codec/Struct';
+import Tuple from './codec/Tuple';
 import StorageData from './StorageData';
 import StorageKey from './StorageKey';
 

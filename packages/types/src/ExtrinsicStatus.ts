@@ -2,8 +2,8 @@
 // This software may be modified and distributed under the terms
 // of the Apache-2.0 license. See the LICENSE file for details.
 
-import EnumType from '../codec/EnumType';
-import Vector from '../codec/Vector';
+import EnumType from './codec/EnumType';
+import Vector from './codec/Vector';
 import Hash from './Hash';
 import Null from './Null';
 import Text from './Text';

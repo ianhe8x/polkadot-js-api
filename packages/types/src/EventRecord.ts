@@ -2,8 +2,8 @@
 // This software may be modified and distributed under the terms
 // of the Apache-2.0 license. See the LICENSE file for details.
 
-import EnumType from '../codec/EnumType';
-import Struct from '../codec/Struct';
+import EnumType from './codec/EnumType';
+import Struct from './codec/Struct';
 import Event from './Event';
 import Null from './Null';
 import U32 from './U32';

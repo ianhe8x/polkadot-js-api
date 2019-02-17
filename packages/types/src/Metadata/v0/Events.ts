@@ -5,8 +5,8 @@
 import Struct from '../../codec/Struct';
 import Tuple from '../../codec/Tuple';
 import Vector from '../../codec/Vector';
-import Text from '../../default/Text';
-import Type from '../../default/Type';
+import Text from '../../Text';
+import Type from '../../Type';
 
 export class EventMetadata extends Struct {
   constructor (value?: any) {

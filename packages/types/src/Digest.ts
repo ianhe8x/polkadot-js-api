@@ -2,10 +2,10 @@
 // This software may be modified and distributed under the terms
 // of the Apache-2.0 license. See the LICENSE file for details.
 
-import EnumType from '../codec/EnumType';
-import Struct from '../codec/Struct';
-import Tuple from '../codec/Tuple';
-import Vector from '../codec/Vector';
+import EnumType from './codec/EnumType';
+import Struct from './codec/Struct';
+import Tuple from './codec/Tuple';
+import Vector from './codec/Vector';
 import AuthorityId from './AuthorityId';
 import Bytes from './Bytes';
 import Hash from './Hash';

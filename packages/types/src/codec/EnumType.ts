@@ -5,7 +5,7 @@
 import { assert, hexToU8a, isHex, isNumber, isObject, isString, isU8a, u8aConcat, u8aToHex } from '@polkadot/util';
 
 import Base from './Base';
-import { Null } from '../index';
+import Null from '../Null';
 import { Codec, Constructor } from '../types';
 
 type TypesDef = {

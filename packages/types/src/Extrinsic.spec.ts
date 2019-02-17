@@ -5,7 +5,7 @@
 import extrinsics from '@polkadot/extrinsics/static';
 
 import Extrinsic from './Extrinsic';
-import Method from '../Method';
+import Method from './Method';
 
 describe('Extrinsic', () => {
   beforeAll(() => {

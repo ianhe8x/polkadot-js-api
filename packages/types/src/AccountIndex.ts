@@ -6,7 +6,7 @@ import BN from 'bn.js';
 import { decodeAddress, encodeAddress } from '@polkadot/keyring';
 import { bnToBn, isBn, isNumber, isU8a, isHex } from '@polkadot/util';
 
-import { AnyNumber } from '../types';
+import { AnyNumber } from './types';
 import U32 from './U32';
 
 export const ENUMSET_SIZE = new BN(64);

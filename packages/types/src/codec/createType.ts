@@ -5,7 +5,7 @@
 import { assert } from '@polkadot/util';
 
 import { Codec, Constructor } from '../types';
-import { Text } from '../index';
+import Text from '../Text';
 import Compact from './Compact';
 import Option from './Option';
 import Struct from './Struct';
@@ -13,13 +13,6 @@ import Tuple from './Tuple';
 import UInt from './UInt';
 import Vector from './Vector';
 import registry from './typeRegistry';
-import {
-  Metadata$Compact,
-  Metadata$Option,
-  Metadata$Tuple,
-  Metadata$Vector,
-  MetadataName
-} from '../Metadata/v2/MetadataRegistry';
 
 export enum TypeDefInfo {
   Compact,
@@ -27,8 +20,7 @@ export enum TypeDefInfo {
   Plain,
   Struct,
   Tuple,
-  Vector,
-  TypeV2
+  Vector
 }
 
 export type TypeDef = {
@@ -100,12 +92,8 @@ export function typeSplit (type: string): Array<string> {
   return result;
 }
 
-function isV2Type (type: string) {
-  return type.startsWith('#V2');
-}
-
-// TODO: support V2
-export function getTypeDefV0 (type: string, name?: string): TypeDef {
+export function getTypeDef (_type: Text | string, name?: string): TypeDef {
+  const type = _type.toString().trim();
   const value: TypeDef = {
     info: TypeDefInfo.Plain,
     name,
@@ -146,47 +134,92 @@ export function getTypeDefV0 (type: string, name?: string): TypeDef {
 
   return value;
 }
+// function isV2Type (type: string) {
+//   return type.startsWith('#V2');
+// }
+//
+// // TODO: support V2
+// export function getTypeDefV0 (type: string, name?: string): TypeDef {
+//   const value: TypeDef = {
+//     info: TypeDefInfo.Plain,
+//     name,
+//     type
+//   };
+//   let subType = '';
+//
+//   const startingWith = (type: string, start: string, end: string): boolean => {
+//     if (type.substr(0, start.length) !== start) {
+//       return false;
+//     }
+//
+//     assert(type[type.length - 1] === end, `Expected '${start}' closing with '${end}'`);
+//
+//     subType = type.substr(start.length, type.length - start.length - 1);
+//
+//     return true;
+//   };
+//
+//   if (startingWith(type, '(', ')')) {
+//     value.info = TypeDefInfo.Tuple;
+//     value.sub = typeSplit(subType).map((inner) => getTypeDef(inner));
+//   } else if (startingWith(type, '{', '}')) {
+//     const parsed = JSON.parse(type);
+//
+//     value.info = TypeDefInfo.Struct;
+//     value.sub = Object.keys(parsed).map((name) => getTypeDef(parsed[name], name));
+//   } else if (startingWith(type, 'Compact<', '>')) {
+//     value.info = TypeDefInfo.Compact;
+//     value.sub = getTypeDef(subType);
+//   } else if (startingWith(type, 'Option<', '>')) {
+//     value.info = TypeDefInfo.Option;
+//     value.sub = getTypeDef(subType);
+//   } else if (startingWith(type, 'Vec<', '>')) {
+//     value.info = TypeDefInfo.Vector;
+//     value.sub = getTypeDef(subType);
+//   }
+//
+//   return value;
+// }
+//
+// export function getTypeDefV2 (type: string, name?: string): TypeDef {
+//   const metaName = new MetadataName(JSON.parse(type.substr(3)));
+//   return _getTypeDefV2(metaName);
+// }
+//
+// export function _getTypeDefV2 (metaName: MetadataName): TypeDef {
+//   // const sub = getTypeDef(metaName.value);
+//
+//   const value: TypeDef = {
+//     info: TypeDefInfo.TypeV2,
+//     name,
+//     type: metaName.toString()
+//   };
+//
+//   if (metaName.type === 'Metadata$Array' || metaName.type === 'Metadata$Vector') {
+//     value.info = TypeDefInfo.Vector;
+//     value.sub = _getTypeDefV2(metaName.value as Metadata$Vector);
+//   } else if (metaName.type === 'Metadata$Tuple') {
+//     value.info = TypeDefInfo.Tuple;
+//     value.sub = (metaName.value as Metadata$Tuple).map((inner) => _getTypeDefV2(inner));
+//   } else if (metaName.type === 'Metadata$Option') {
+//     value.info = TypeDefInfo.Option;
+//     value.sub = _getTypeDefV2(metaName.value as Metadata$Option);
+//   } else if (metaName.type === 'Metadata$Compact') {
+//     value.info = TypeDefInfo.Compact;
+//     value.sub = _getTypeDefV2(metaName.value as Metadata$Compact);
+//   }
+//   return value;
+// }
+//
+// export function getTypeDef (_type: Text | string, name?: string): TypeDef {
+//   const type = _type.toString().trim();
+//   if (isV2Type(type)) {
+//     return getTypeDefV2(type, name);
+//   } else {
+//     return getTypeDefV0(type, name);
+//   }
+// }
 
-export function getTypeDefV2 (type: string, name?: string): TypeDef {
-  const metaName = new MetadataName(JSON.parse(type.substr(3)));
-  return _getTypeDefV2(metaName);
-}
-
-export function _getTypeDefV2 (metaName: MetadataName): TypeDef {
-  // const sub = getTypeDef(metaName.value);
-
-  const value: TypeDef = {
-    info: TypeDefInfo.TypeV2,
-    name,
-    type: metaName.toString()
-  };
-
-  if (metaName.type === 'Metadata$Array' || metaName.type === 'Metadata$Vector') {
-    value.info = TypeDefInfo.Vector;
-    value.sub = _getTypeDefV2(metaName.value as Metadata$Vector);
-  } else if (metaName.type === 'Metadata$Tuple') {
-    value.info = TypeDefInfo.Tuple;
-    value.sub = (metaName.value as Metadata$Tuple).map((inner) => _getTypeDefV2(inner));
-  } else if (metaName.type === 'Metadata$Option') {
-    value.info = TypeDefInfo.Option;
-    value.sub = _getTypeDefV2(metaName.value as Metadata$Option);
-  } else if (metaName.type === 'Metadata$Compact') {
-    value.info = TypeDefInfo.Compact;
-    value.sub = _getTypeDefV2(metaName.value as Metadata$Compact);
-  }
-  return value;
-}
-
-export function getTypeDef (_type: Text | string, name?: string): TypeDef {
-  const type = _type.toString().trim();
-  if (isV2Type(type)) {
-    return getTypeDefV2(type, name);
-  } else {
-    return getTypeDefV0(type, name);
-  }
-}
-
-// TODO: support V2
 // Returns the type Class for construction
 export function getTypeClass (value: TypeDef): Constructor {
   if (value.info === TypeDefInfo.Compact) {

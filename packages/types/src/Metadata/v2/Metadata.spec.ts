@@ -10,14 +10,19 @@ import Method from '../../Method';
 import Metadata from '../index';
 // import latestParsed from './v1/latest.substrate.v1.json';
 import rpcData from './static';
+import typeRegistry from '../../codec/typeRegistry';
+import MetadataV2 from './index';
 
 describe('Metadata', () => {
-  const metadata = new Metadata(rpcData);
+  const metadata = new Metadata(rpcData).asV2 as MetadataV2;
 
   it.only('decodes latest properly', () => {
     const str = JSON.stringify(metadata.toJSON());
 
     console.error(str);
+
+    typeRegistry.register(metadata.typeRegistry);
+
     // console.error(metadata.getUniqTypes());
 
     expect(metadata.version).toBe(2);

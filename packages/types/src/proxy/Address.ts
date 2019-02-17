@@ -3,8 +3,8 @@ import { AddressLike, Constructor } from '../types';
 import typeRegistry from '../codec/typeRegistry';
 import { BaseProxy } from './base';
 
-import AccountId from '../default/AccountId';
-import AccountIndex from '../default/AccountIndex';
+import AccountId from '../AccountId';
+import AccountIndex from '../AccountIndex';
 
 export type AnyAddress = BN | AddressLike | AccountId | AccountIndex | Array<number> | Uint8Array | number | string;
 

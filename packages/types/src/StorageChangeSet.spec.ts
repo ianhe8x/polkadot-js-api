@@ -3,7 +3,7 @@
 // of the Apache-2.0 license. See the LICENSE file for details.
 
 import { createType } from '@polkadot/types/codec';
-import json from '../json/StorageChangeSet.001.json';
+import json from './json/StorageChangeSet.001.json';
 import StorageChangeSet from './StorageChangeSet';
 
 describe('StorageChangeSet', () => {

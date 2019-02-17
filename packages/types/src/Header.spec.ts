@@ -5,8 +5,8 @@
 import BN from 'bn.js';
 
 import Header from './Header';
-import json1 from '../json/Header.001.json';
-import json2 from '../json/Header.002.json';
+import json1 from './json/Header.001.json';
+import json2 from './json/Header.002.json';
 
 describe('Header', () => {
   it('decodes an actual JSON response', () => {

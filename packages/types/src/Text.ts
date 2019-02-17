@@ -4,8 +4,8 @@
 
 import { isString, stringToU8a, u8aToString, u8aToHex } from '@polkadot/util';
 
-import { AnyU8a, Codec } from '../types';
-import Compact from '../codec/Compact';
+import { AnyU8a, Codec } from './types';
+import Compact from './codec/Compact';
 
 /**
  * @name Text

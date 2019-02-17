@@ -4,7 +4,7 @@
 
 import BN from 'bn.js';
 
-import { CodecTo } from '../types';
+import { CodecTo } from './types';
 import Moment from './Moment';
 import U64 from './U64';
 

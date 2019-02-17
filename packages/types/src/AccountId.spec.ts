@@ -3,9 +3,9 @@
 // of the Apache-2.0 license. See the LICENSE file for details.
 
 import { setAddressPrefix } from '@polkadot/keyring';
-import U8a from '../codec/U8a';
-import Vector from '../codec/Vector';
-import jsonVec from '../json/AccountIdVec.001.json';
+import U8a from './codec/U8a';
+import Vector from './codec/Vector';
+import jsonVec from './json/AccountIdVec.001.json';
 import AccountId from './AccountId';
 import StorageData from './StorageData';
 

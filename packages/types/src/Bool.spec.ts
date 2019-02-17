@@ -3,7 +3,7 @@
 // of the Apache-2.0 license. See the LICENSE file for details.
 
 import Bool from './Bool';
-import { CodecTo } from '../types';
+import { CodecTo } from './types';
 
 describe('Bool', () => {
   describe('decode', () => {

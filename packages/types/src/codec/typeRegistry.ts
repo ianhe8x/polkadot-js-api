@@ -4,57 +4,53 @@
 
 import { Constructor, RegistryTypes } from '../types';
 
-const Default = require('../default');
-
 import { isFunction, isString, isUndefined } from '@polkadot/util';
 
-import { createClass, TypeDef } from './createType';
-import MetadataRegistry, {
-  TypeMetadata,
-  TypeMetadataKind, TypeMetadataKind$Enum,
-  TypeMetadataKind$Primitive,
-  TypeMetadataKind$Struct
-} from '../Metadata/v2/MetadataRegistry';
+import { createClass, getTypeDef, TypeDef } from './createType';
+import MetadataRegistry, { TypeMetadata } from '../Metadata/v2/MetadataRegistry';
 import { deriveUInt } from './UInt';
 import { deriveU8aFixed } from './U8aFixed';
-import Struct from './Struct';
 
-const TYPES_DEFAULT = {
-  ...Default
-};
+type TypeDefMap = {[name: string]: Constructor | undefined};
+
+// const TYPES_DEFAULT = {
+//   ...Default
+// };
 
 // TODO: what is RESULT and UKNOWN and isize
 const TYPES_V2 = {
-  '{"Metadata$Str":null}': Default.Text,
-  '{"Metadata$Unit":null}': Default.Null,
-  '{"Metadata$Bool":null}': Default.bool,
-  '{"Metadata$Usize":null}': Default.usize,
-  // Metadata$Isize: isize,
-  '{"Metadata$U8":null}': Default.u8,
-  '{"Metadata$I8":null}': Default.i8,
-  '{"Metadata$U16":null}': Default.u16,
-  '{"Metadata$I16":null}': Default.i16,
-  '{"Metadata$U32":null}': Default.u32,
-  '{"Metadata$I32":null}': Default.i32,
-  '{"Metadata$U64":null}': Default.u64,
-  '{"Metadata$I64":null}': Default.i64,
-  '{"Metadata$U128":null}': Default.u128,
-  '{"Metadata$I128":null}': Default.i128,
-  '{"Metadata$U256":null}': Default.u256,
-  '{"Metadata$U512":null}': deriveUInt(256),
-  '{"Metadata$H160":null}': deriveU8aFixed(160),
-  '{"Metadata$H256":null}': Default.H256,
-  '{"Metadata$H512":null}': Default.H512
+  // Metadata$Str: Default.Text,
+  // Metadata$Unit: Default.Null,
+  // Metadata$Bool: Default.bool,
+  // Metadata$Usize: Default.usize,
+  // // Metadata$Isize: isize,
+  // Metadata$U8: Default.u8,
+  // Metadata$I8: Default.i8,
+  // Metadata$U16: Default.u16,
+  // Metadata$I16: Default.i16,
+  // Metadata$U32: Default.u32,
+  // Metadata$I32: Default.i32,
+  // Metadata$U64: Default.u64,
+  // Metadata$I64: Default.i64,
+  // Metadata$U128: Default.u128,
+  // Metadata$I128: Default.i128,
+  // Metadata$U256: Default.u256,
+  // Metadata$U512: deriveUInt(256),
+  // Metadata$H160: deriveU8aFixed(160),
+  // Metadata$H256: Default.H256,
+  // Metadata$H512: Default.H512
 };
 
 export class TypeRegistry {
   static readonly defaultRegistry: TypeRegistry = new TypeRegistry();
 
   private _registry: Map<string, Constructor> = new Map();
+  private _typeDefMap: Map<string, TypeDef> = new Map();
 
   constructor () {
-    this.registerObject(TYPES_DEFAULT as any);
-    this.registerObject(TYPES_V2);
+    // const Default = require('../index');
+    // this.registerObject(Default as any);
+    // this.registerObject(TYPES_V2);
   }
 
   register (type: Constructor | RegistryTypes | MetadataRegistry): void;
@@ -77,23 +73,37 @@ export class TypeRegistry {
     }
   }
 
-  private getStructTypeClass (typeDef: TypeMetadataKind$Primitive | TypeMetadataKind$Struct | TypeMetadataKind$Enum): Constructor {
-    if (typeDef instanceof TypeMetadataKind$Struct) {}
+  // private getStructTypeClass (typeDef: TypeMetadataKind$Primitive | TypeMetadataKind$Struct | TypeMetadataKind$Enum): Constructor {
+  //   if (typeDef instanceof TypeMetadataKind$Struct) {}
+  // }
+  //
+  private registerTypeMetadata (obj: MetadataRegistry) {
+    const typeDefMap = obj.reduce((acc, typeMetadata) => {
+      const typeName = typeMetadata.name.toString();
+      acc[typeName] = undefined;
+      return acc;
+    }, {} as TypeDefMap);
+    console.log(typeDefMap);
+    const pendingTypes: TypeMetadata[] = [];
+    // for (const typeMetadata of obj) {
+    //   const kind = typeMetadata.kind;
+    //   if (kind.type === 'TypeMetadataKind$Struct') {
+    //     const typeDef = kind.value as TypeMetadataKind$Struct;
+    //
+    //     const argsDef = typeDef.reduce((acc, subType) => {
+    //       subType
+    //     }, {});
+    //     this.register(typeMetadata.name.toString(), Struct.with({}));
+    //   }
+    // }
   }
 
-  private registerTypeMetadata (obj: MetadataRegistry) {
-    const pendingTypes: TypeMetadata[] = [];
-    for (const typeMetadata of obj) {
-      const kind = typeMetadata.kind;
-      if (kind.type === 'TypeMetadataKind$Struct') {
-        const typeDef = kind.value as TypeMetadataKind$Struct;
-
-        const argsDef = typeDef.reduce((acc, subType) => {
-          subType
-        }, {});
-        this.register(typeMetadata.name.toString(), Struct.with({}));
-      }
-    }
+  private typeDefFromMetadataRegistry (meta: MetadataRegistry): TypeDefMap {
+    return meta.reduce((acc, typeMetadata) => {
+      const typeName = typeMetadata.name.toString();
+      acc[typeName] = undefined;
+      return acc;
+    }, {} as TypeDefMap);
   }
 
   private registerObject (obj: RegistryTypes) {

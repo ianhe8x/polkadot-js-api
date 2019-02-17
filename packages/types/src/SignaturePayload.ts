@@ -3,11 +3,11 @@
 // of the Apache-2.0 license. See the LICENSE file for details.
 
 import { KeyringPair } from '@polkadot/keyring/types';
-import { AnyNumber, AnyU8a } from '../types';
+import { AnyNumber, AnyU8a } from './types';
 
 import { blake2AsU8a } from '@polkadot/util-crypto';
 
-import Struct from '../codec/Struct';
+import Struct from './codec/Struct';
 import ExtrinsicEra from './ExtrinsicEra';
 import Hash from './Hash';
 import Method from './Method';

@@ -4,7 +4,7 @@
 
 import { isU8a, u8aToHex } from '@polkadot/util';
 
-import { Codec } from '../types';
+import { Codec } from './types';
 
 /**
  * @name Bool

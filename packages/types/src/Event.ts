@@ -2,16 +2,16 @@
 // This software may be modified and distributed under the terms
 // of the Apache-2.0 license. See the LICENSE file for details.
 
-import { Constructor } from '../types';
+import { Constructor } from './types';
 
 import { isUndefined, stringCamelCase, u8aToHex } from '@polkadot/util';
 
-import Struct from '../codec/Struct';
-import Tuple from '../codec/Tuple';
-import U8aFixed from '../codec/U8aFixed';
-import { TypeDef, getTypeClass, getTypeDef } from '../codec/createType';
-import MetadataV0 from '../Metadata/v0';
-import { EventMetadata } from '../Metadata/v0/Events';
+import Struct from './codec/Struct';
+import Tuple from './codec/Tuple';
+import U8aFixed from './codec/U8aFixed';
+import { TypeDef, getTypeClass, getTypeDef } from './codec/createType';
+import MetadataV0 from './Metadata/v0';
+import { EventMetadata } from './Metadata/v0/Events';
 import Null from './Null';
 
 const EventTypes: { [index: string]: Constructor<EventData> } = {};

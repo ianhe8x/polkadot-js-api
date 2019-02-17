@@ -2,7 +2,7 @@
 // This software may be modified and distributed under the terms
 // of the Apache-2.0 license. See the LICENSE file for details.
 
-import json from '../json/Header.002.json';
+import json from './json/Header.002.json';
 import Digest from './Digest';
 
 describe('Digest', () => {

@@ -2,9 +2,9 @@
 // This software may be modified and distributed under the terms
 // of the Apache-2.0 license. See the LICENSE file for details.
 
-import { AnyU8a } from '../types';
+import { AnyU8a } from './types';
 
-import Tuple from '../codec/Tuple';
+import Tuple from './codec/Tuple';
 import AuthorityId from './AuthorityId';
 import Hash from './Hash';
 import Signature from './Signature';

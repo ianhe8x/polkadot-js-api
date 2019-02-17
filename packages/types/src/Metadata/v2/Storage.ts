@@ -5,9 +5,9 @@
 import EnumType from '../../codec/EnumType';
 import Struct from '../../codec/Struct';
 import Vector from '../../codec/Vector';
-import Bytes from '../../default/Bytes';
-import Null from '../../default/Null';
-import Text from '../../default/Text';
+import Bytes from '../../Bytes';
+import Null from '../../Null';
+import Text from '../../Text';
 import { MetadataName } from './MetadataRegistry';
 
 export class Default extends Null {}

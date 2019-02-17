@@ -5,10 +5,10 @@
 import EnumType from '../../codec/EnumType';
 import Struct from '../../codec/Struct';
 import Vector from '../../codec/Vector';
-import Null from '../../default/Null';
+import Null from '../../Null';
 import Tuple from '../../codec/Tuple';
-import Text from '../../default/Text';
-import U16 from '../../default/U16';
+import Text from '../../Text';
+import U16 from '../../U16';
 
 export class MetadataName extends EnumType<Metadata$Unknown | Metadata$Custom | Metadata$CustomWithGenerics | Metadata$Array | Metadata$Vector | Metadata$Tuple | Metadata$Option | Metadata$Result | Metadata$Compact | Metadata$Str | Metadata$Unit | Metadata$Bool | Metadata$Usize | Metadata$Isize | Metadata$U8 | Metadata$I8 | Metadata$U16 | Metadata$I16 | Metadata$U32 | Metadata$I32 | Metadata$U64 | Metadata$I64 | Metadata$U128 | Metadata$I128 | Metadata$U256 | Metadata$U512 | Metadata$H160 | Metadata$H256 | Metadata$H512> {
   constructor (value: any) {
@@ -75,7 +75,7 @@ export class Metadata$Custom extends Tuple {
     return this[1].toString();
   }
   toString (): string {
-    return `${this[0].toString()}#${this[0].toString()}`;
+    return `${this[0].toString()}#${this[1].toString()}`;
   }
 }
 
@@ -99,11 +99,11 @@ export class Metadata$CustomWithGenerics extends Tuple {
       subType = generics[0].toString();
     } else if (this.length > 1) {
       subType = generics[0].toString();
-      for (let i = 1; i < this.length; i++) {
+      for (let i = 1; i < generics.length; i++) {
         subType = `${subType},${generics[i].toString()}`;
       }
     }
-    return `${this[0].toString()}#${this[0].toString()}<${subType}>`;
+    return `${this[0].toString()}#${this[1].toString()}<${subType}>`;
   }
 }
 
@@ -150,7 +150,7 @@ export class Metadata$Result extends Tuple {
     ], value);
   }
   toString (): string {
-    return `(${this[0].toString()},${this[1].toString()})`;
+    return `Result<${this[0].toString()},${this[1].toString()}>`;
   }
 }
 export class Metadata$Compact extends MetadataName {
