@@ -10,7 +10,7 @@ import SingleAccountSigner from "../util/SingleAccountSigner";
 
 const keyring = testingPairs();
 
-describe.skip('e2e transactions', () => {
+describe('e2e transactions', () => {
   let api;
 
   beforeEach(async (done) => {
@@ -28,6 +28,9 @@ describe.skip('e2e transactions', () => {
 
   it('makes a transfer (sign, then send)', async (done) => {
     const nonce = await api.query.system.accountNonce(keyring.dave.address());
+    const extrinsic = api.tx.balances
+      .transfer('12ghjsRJpeJpUQaCQeHcBv9pRQA3tdcMxeL8cVk9JHWJGHjd', 12345);
+    console.log(extrinsic.toJSON());
 
     return api.tx.balances
       .transfer('12ghjsRJpeJpUQaCQeHcBv9pRQA3tdcMxeL8cVk9JHWJGHjd', 12345)

@@ -16,8 +16,8 @@ describe('Metadata', () => {
   const metadata = new Metadata(rpcData);
 
   it.only('decodes latest properly', () => {
-    const str = JSON.stringify(metadata.asV2.toJSON());
-    const v0 = metadata.asV0;
+    // const str = JSON.stringify(metadata.asV2.toJSON());
+    // const v0 = metadata.asV0;
     const registry = getRegistry();
     registry.register(metadata.asV2.typeRegistry);
 
