@@ -4,7 +4,7 @@
 
 import { MetadataInterface } from './types';
 
-import { isUndefined } from '@polkadot/util';
+import { assert, isUndefined } from '@polkadot/util';
 
 import EnumType from '../codec/EnumType';
 import Struct from '../codec/Struct';
@@ -15,7 +15,7 @@ import MetadataV2 from './v2';
 import v1ToV0 from './v1/toV0';
 import MagicNumber from './MagicNumber';
 
-class MetadataEnum extends EnumType<Null | MetadataV1> {
+class MetadataEnum extends EnumType<Null | MetadataV1 | MetadataV2> {
   constructor (value?: any) {
     super({
       MetadataV0, // once rolled-out, can replace this with Null
@@ -92,19 +92,15 @@ export default class MetadataVersioned extends Struct implements MetadataInterfa
   /**
    * @description Returns the wrapped metadata as a V0 object
    */
-  get asV0 (): MetadataV0 | undefined {
+  get asV0 (): MetadataV0 {
     if (this.metadata.version === 0) {
       return this.metadata.asV0;
     }
 
-    const v1 = this.asV1;
-
-    if (isUndefined(v1)) {
-      return undefined;
-    }
+    assert(this.metadata.version <= 2, `Cannot convert metadata from v${this.metadata.version} to v0`);
 
     if (isUndefined(this._convertedV0)) {
-      this._convertedV0 = v1ToV0(v1);
+      this._convertedV0 = v1ToV0(this.metadata.asV1);
     }
 
     return this._convertedV0;
@@ -113,21 +109,18 @@ export default class MetadataVersioned extends Struct implements MetadataInterfa
   /**
    * @description Returns the wrapped values as a V1 object
    */
-  get asV1 (): MetadataV1 | undefined {
-    if (this.metadata.version === 1) {
-      return this.metadata.asV1;
-    }
-    return undefined;
+  get asV1 (): MetadataV1 {
+    assert(this.metadata.version === 1, `Cannot convert metadata from v${this.metadata.version} to v1`);
+
+    return this.metadata.asV1;
   }
 
   /**
    * @description Returns the wrapped values as a V1 object
    */
-  get asV2 (): MetadataV2 | undefined {
-    if (this.metadata.version === 2) {
-      return this.metadata.asV2;
-    }
-    return undefined;
+  get asV2 (): MetadataV2 {
+    assert(this.metadata.version === 2, `Cannot convert metadata from v${this.metadata.version} to v2`);
+    return this.metadata.asV2;
   }
 
   getUniqTypes (): Array<string> {

@@ -5,7 +5,7 @@
 import { KeyringPair } from '@polkadot/keyring/types';
 import { AnyNumber, AnyU8a, Codec, Constructor, ExtrinsicLike, AddressLike } from '../types';
 
-import typeRegistry from '../codec/typeRegistry';
+import getRegistry from '../codec/typeRegistry';
 import ExtrinsicSignature, { SignatureOptions } from '../ExtrinsicSignature';
 import Hash from '../Hash';
 import { FunctionMetadata } from '../Metadata/v0/Modules';
@@ -32,7 +32,7 @@ export default class Extrinsic extends BaseProxy<ExtrinsicLike> implements Extri
   protected target: ExtrinsicLike;
   constructor (value?: ExtrinsicValue | AnyU8a | Method) {
     super();
-    this.targetCls = typeRegistry.getOrThrow('Extrinsic');
+    this.targetCls = getRegistry().getOrThrow('Extrinsic');
     this.target = new this.targetCls(value) as ExtrinsicLike;
   }
 

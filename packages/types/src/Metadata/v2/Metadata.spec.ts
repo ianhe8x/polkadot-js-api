@@ -2,26 +2,24 @@
 // This software may be modified and distributed under the terms
 // of the Apache-2.0 license. See the LICENSE file for details.
 
-import extrinsicsFromMeta from '@polkadot/extrinsics/fromMetadata';
-
-import createType from '../../codec/createType';
-import Method from '../../Method';
+// import extrinsicsFromMeta from '@polkadot/extrinsics/fromMetadata';
+//
+// import createType from '../../codec/createType';
+// import Method from '../../Method';
 
 import Metadata from '../index';
 // import latestParsed from './v1/latest.substrate.v1.json';
 import rpcData from './static';
-import typeRegistry from '../../codec/typeRegistry';
-import MetadataV2 from './index';
+import getRegistry from '../../codec/typeRegistry';
 
 describe('Metadata', () => {
-  const metadata = new Metadata(rpcData).asV2 as MetadataV2;
+  const metadata = new Metadata(rpcData);
 
   it.only('decodes latest properly', () => {
-    const str = JSON.stringify(metadata.toJSON());
-
-    console.error(str);
-
-    typeRegistry.register(metadata.typeRegistry);
+    const str = JSON.stringify(metadata.asV2.toJSON());
+    const v0 = metadata.asV0;
+    const registry = getRegistry();
+    registry.register(metadata.asV2.typeRegistry);
 
     // console.error(metadata.getUniqTypes());
 
@@ -37,20 +35,20 @@ describe('Metadata', () => {
 
     expect(metadata.getUniqTypes()).toEqual(v0.getUniqTypes());
   });
-
-  describe('storage with default values', () => {
-    Method.injectMethods(extrinsicsFromMeta(metadata.asV0));
-
-    metadata.asV1.modules
-      .filter(({ storage }) => storage.isSome)
-      .map((mod) =>
-        mod.storage.unwrap().forEach(({ fallback, name, type }) => {
-          it(`creates default types for ${mod.prefix}.${name}, type ${type}`, () => {
-            expect(
-              () => createType(type.toString(), fallback)
-            ).not.toThrow();
-          });
-        })
-      );
-  });
+  //
+  // describe('storage with default values', () => {
+  //   Method.injectMethods(extrinsicsFromMeta(metadata.asV0));
+  //
+  //   metadata.asV1.modules
+  //     .filter(({ storage }) => storage.isSome)
+  //     .map((mod) =>
+  //       mod.storage.unwrap().forEach(({ fallback, name, type }) => {
+  //         it(`creates default types for ${mod.prefix}.${name}, type ${type}`, () => {
+  //           expect(
+  //             () => createType(type.toString(), fallback)
+  //           ).not.toThrow();
+  //         });
+  //       })
+  //     );
+  // });
 });

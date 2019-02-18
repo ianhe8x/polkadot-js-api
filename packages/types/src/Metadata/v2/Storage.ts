@@ -9,10 +9,13 @@ import Bytes from '../../Bytes';
 import Null from '../../Null';
 import Text from '../../Text';
 import { MetadataName } from './MetadataRegistry';
+import { StorageFunctionType as StorageFunctionTypeV0, MapType as MapTypeV0 } from '../v0/Modules';
 
-export class Default extends Null {}
+export class Default extends Null {
+}
 
-export class Optional extends Null {}
+export class Optional extends Null {
+}
 
 export class MetadataStorageModifier extends EnumType<Optional | Default> {
   constructor (value?: any, index?: number) {
@@ -87,6 +90,17 @@ export class MetadataStorageType extends EnumType<PlainType | MapType> {
    */
   get asType (): PlainType {
     return this.value as PlainType;
+  }
+
+  get asV0 (): StorageFunctionTypeV0 {
+    if (this.type === 'PlainType') {
+      return new StorageFunctionTypeV0(this.asType.toString(), 0);
+    } else {
+      const mapV2 = this.asMap;
+      return new StorageFunctionTypeV0(new MapTypeV0(
+        { key: mapV2.key.toString(), value: mapV2.value.toString() }
+      ), 1);
+    }
   }
 
   /**
