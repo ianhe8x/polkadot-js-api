@@ -17,7 +17,8 @@ describe('Metadata', () => {
 
   it.only('decodes latest properly', () => {
     const str = JSON.stringify(metadata.asV2.toJSON());
-    const v0 = metadata.asV0;
+
+    console.error(str);
     const registry = getRegistry();
     registry.register(metadata.asV2.typeRegistry);
 

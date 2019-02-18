@@ -8,14 +8,11 @@ import Vector from '../../codec/Vector';
 import Bytes from '../../Bytes';
 import Null from '../../Null';
 import Text from '../../Text';
-import { MetadataName } from './MetadataRegistry';
-import { StorageFunctionType as StorageFunctionTypeV0, MapType as MapTypeV0 } from '../v0/Modules';
+import Type from '../../Type';
 
-export class Default extends Null {
-}
+export class Default extends Null {}
 
-export class Optional extends Null {
-}
+export class Optional extends Null {}
 
 export class MetadataStorageModifier extends EnumType<Optional | Default> {
   constructor (value?: any, index?: number) {
@@ -37,30 +34,56 @@ export class MetadataStorageModifier extends EnumType<Optional | Default> {
   }
 }
 
+// export class MapType extends Struct {
+//   constructor (value?: any) {
+//     super({
+//       key: MetadataName,
+//       value: MetadataName
+//     }, value);
+//   }
+//
+//   /**
+//    * @description The mapped key as [[MetadataName]]
+//    */
+//   get key (): MetadataName {
+//     return this.get('key') as MetadataName;
+//   }
+//
+//   /**
+//    * @description The mapped value as [[MetadataName]]
+//    */
+//   get value (): MetadataName {
+//     return this.get('value') as MetadataName;
+//   }
+// }
+//
+// export class PlainType extends MetadataName {
+// }
+
 export class MapType extends Struct {
   constructor (value?: any) {
     super({
-      key: MetadataName,
-      value: MetadataName
+      key: Type,
+      value: Type
     }, value);
   }
 
   /**
-   * @description The mapped key as [[MetadataName]]
+   * @description The mapped key as [[Type]]
    */
-  get key (): MetadataName {
-    return this.get('key') as MetadataName;
+  get key (): Type {
+    return this.get('key') as Type;
   }
 
   /**
-   * @description The mapped value as [[MetadataName]]
+   * @description The mapped value as [[Type]]
    */
-  get value (): MetadataName {
-    return this.get('value') as MetadataName;
+  get value (): Type {
+    return this.get('value') as Type;
   }
 }
 
-export class PlainType extends MetadataName {
+export class PlainType extends Type {
 }
 
 export class MetadataStorageType extends EnumType<PlainType | MapType> {
@@ -90,17 +113,6 @@ export class MetadataStorageType extends EnumType<PlainType | MapType> {
    */
   get asType (): PlainType {
     return this.value as PlainType;
-  }
-
-  get asV0 (): StorageFunctionTypeV0 {
-    if (this.type === 'PlainType') {
-      return new StorageFunctionTypeV0(this.asType.toString(), 0);
-    } else {
-      const mapV2 = this.asMap;
-      return new StorageFunctionTypeV0(new MapTypeV0(
-        { key: mapV2.key.toString(), value: mapV2.value.toString() }
-      ), 1);
-    }
   }
 
   /**

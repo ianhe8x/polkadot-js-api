@@ -12,7 +12,10 @@ import Struct from './Struct';
 import Tuple from './Tuple';
 import UInt from './UInt';
 import Vector from './Vector';
-import registry from './typeRegistry';
+import getRegistry from './typeRegistry';
+import { EnumVariantMetadata, FieldMetadata } from '../Metadata/v2/MetadataRegistry';
+import EnumType from '../codec/EnumType';
+import Null from '../Null';
 
 export enum TypeDefInfo {
   Compact,
@@ -29,6 +32,8 @@ export type TypeDef = {
   type: string,
   sub?: TypeDef | Array<TypeDef>
 };
+
+type TypeClsMap = { [name: string]: Constructor };
 
 // safely split a string on ', ' while taking care of any nested occurences
 export function typeSplit (type: string): Array<string> {
@@ -134,6 +139,7 @@ export function getTypeDef (_type: Text | string, name?: string): TypeDef {
 
   return value;
 }
+
 // function isV2Type (type: string) {
 //   return type.startsWith('#V2');
 // }
@@ -258,11 +264,11 @@ export function getTypeClass (value: TypeDef): Constructor {
     );
   }
 
-  const Type = registry.get(value.type);
+  const Type = getRegistry().getOrThrow(value.type,
+    `Unable to determine type from '${value.type}'`
+  );
 
-  assert(Type, `Unable to determine type from '${value.type}'`);
-
-  return Type as Constructor;
+  return Type;
 }
 
 export function createClass (type: Text | string, value?: any): Constructor {
@@ -277,4 +283,64 @@ export default function createType (type: Text | string, value?: any): Codec {
   const Type = createClass(type);
 
   return new Type(value);
+}
+
+export function createMetadataKind$Struct (types: FieldMetadata[]) {
+  if (types.length === 0) {
+    return Null;
+  } else if ((types[0] as FieldMetadata).name.type === 'FieldName$Unnamed') {
+    return createTuple(types);
+  } else {
+    return createStruct(types);
+  }
+}
+
+/**
+ * create a class derived from Tuple
+ * @param types
+ * @throws when one of the sub type class can't be found in registry
+ */
+function createTuple (types: FieldMetadata[]) {
+  const typeClsList = types.map(typeMetadata => createClass(typeMetadata.ty.toString()));
+
+  return Tuple.with(typeClsList);
+}
+
+/**
+ * convert FieldMetadata[] into a class derived from Struct
+ * @param types
+ * @throws when one of the sub type class can't be found in registry
+ * or if self-reference exists.
+ */
+function createStruct (types: FieldMetadata[]) {
+  const typeClsMap = types.reduce((acc, typeMetadata) => {
+    const typeName = typeMetadata.name.value.toString();
+    acc[typeName] = createClass(typeMetadata.ty.toString());
+    return acc;
+  }, {} as TypeClsMap);
+
+  return Struct.with(typeClsMap);
+}
+
+export function createMetadataKind$Enum (types: EnumVariantMetadata[]) {
+  const typeClsMap = types.reduce((acc, typeMetadata) => {
+    const enumName = typeMetadata.name.toString();
+    const enumIndex = typeMetadata.index.toNumber();
+    const enumFields = typeMetadata.fields.toArray();
+    const definedEnumCount = Object.keys(acc).length;
+    let unknownCount = 0;
+    if (definedEnumCount < enumIndex) {
+      // index can skip, need to sanitize
+      for (let i = 0; i < enumIndex - definedEnumCount; i++) {
+        acc[`UNKNOWN_${unknownCount++}`] = Null;
+      }
+    }
+    if (enumFields.length === 0) {
+      acc[enumName] = Null;
+    } else {
+      acc[enumName] = createMetadataKind$Struct(enumFields);
+    }
+    return acc;
+  }, {} as TypeClsMap);
+  return EnumType.with(typeClsMap);
 }

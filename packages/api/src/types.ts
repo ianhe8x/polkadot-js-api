@@ -5,9 +5,9 @@
 import { Observable } from 'rxjs';
 import { ProviderInterface } from '@polkadot/rpc-provider/types';
 import { RpcRxInterface$Events } from '@polkadot/rpc-rx/types';
-import { Extrinsic, Hash, Metadata, RuntimeVersion, u64 as U64 } from '@polkadot/types/index';
+import { Hash, Metadata, RuntimeVersion, u64 as U64 } from '@polkadot/types/index';
 import { SignatureOptions } from '@polkadot/types/ExtrinsicSignature';
-import { CodecArg, CodecCallback, RegistryTypes } from '@polkadot/types/types';
+import { CodecArg, CodecCallback, ExtrinsicLike, RegistryTypes } from '@polkadot/types/types';
 import { MethodFunction } from '@polkadot/types/Method';
 import { StorageFunction } from '@polkadot/types/StorageKey';
 
@@ -142,5 +142,5 @@ export interface ApiBaseInterface<CodecResult, SubscriptionResult> extends Reado
 }
 
 export interface Signer {
-  sign (extrinsic: Extrinsic, address: string, opt: SignatureOptions): Promise<void>;
+  sign (extrinsic: ExtrinsicLike, address: string, opt: SignatureOptions): Promise<void>;
 }

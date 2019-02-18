@@ -160,102 +160,102 @@ export class Metadata$Compact extends MetadataName {
 }
 export class Metadata$Str extends Null {
   toString (): string {
-    return 'Metadata$Str';
+    return 'Text';
   }
 }
 export class Metadata$Unit extends Null {
   toString (): string {
-    return 'Metadata$Unit';
+    return 'Null';
   }
 }
 export class Metadata$Bool extends Null {
   toString (): string {
-    return 'Metadata$Bool';
+    return 'bool';
   }
 }
 export class Metadata$Usize extends Null {
   toString (): string {
-    return 'Metadata$Usize';
+    return 'usize';
   }
 }
 export class Metadata$Isize extends Null {
   toString (): string {
-    return 'Metadata$Isize';
+    return 'isize';
   }
 }
 export class Metadata$U8 extends Null {
   toString (): string {
-    return 'Metadata$U8';
+    return 'u8';
   }
 }
 export class Metadata$I8 extends Null {
   toString (): string {
-    return 'Metadata$I8';
+    return 'i8';
   }
 }
 export class Metadata$U16 extends Null {
   toString (): string {
-    return 'Metadata$U16';
+    return 'u16';
   }
 }
 export class Metadata$I16 extends Null {
   toString (): string {
-    return 'Metadata$I16';
+    return 'i16';
   }
 }
 export class Metadata$U32 extends Null {
   toString (): string {
-    return 'Metadata$U32';
+    return 'u32';
   }
 }
 export class Metadata$I32 extends Null {
   toString (): string {
-    return 'Metadata$I32';
+    return 'i32';
   }
 }
 export class Metadata$U64 extends Null {
   toString (): string {
-    return 'Metadata$U64';
+    return 'u64';
   }
 }
 export class Metadata$I64 extends Null {
   toString (): string {
-    return 'Metadata$I64';
+    return 'i64';
   }
 }
 export class Metadata$U128 extends Null {
   toString (): string {
-    return 'Metadata$U128';
+    return 'u128';
   }
 }
 export class Metadata$I128 extends Null {
   toString (): string {
-    return 'Metadata$I128';
+    return 'i128';
   }
 }
 export class Metadata$U256 extends Null {
   toString (): string {
-    return 'Metadata$U256';
+    return 'u256';
   }
 }
 export class Metadata$U512 extends Null {
   toString (): string {
-    return 'Metadata$U512';
+    return 'u512';
   }
 }
 export class Metadata$H160 extends Null {
   toString (): string {
-    return 'Metadata$H160';
+    return 'H160';
   }
 }
 export class Metadata$H256 extends Null {
   toString (): string {
-    return 'Metadata$H256';
+    return 'H256';
   }
 }
 export class Metadata$H512 extends Null {
   toString (): string {
-    return 'Metadata$H512';
+    return 'H512';
   }
 }
 
@@ -278,6 +278,14 @@ export class FieldMetadata extends Struct {
       ty: MetadataName
     }, value);
   }
+
+  get name (): FieldName {
+    return this.get('name') as FieldName;
+  }
+
+  get ty (): MetadataName {
+    return this.get('ty') as MetadataName;
+  }
 }
 
 export class EnumVariantMetadata extends Struct {
@@ -287,6 +295,18 @@ export class EnumVariantMetadata extends Struct {
       index: U16,
       fields: Vector.with(FieldMetadata)
     }, value);
+  }
+
+  get name (): Text {
+    return this.get('name') as Text;
+  }
+
+  get index (): U16 {
+    return this.get('index') as U16;
+  }
+
+  get fields (): Vector<FieldMetadata> {
+    return this.get('fields') as Vector<FieldMetadata>;
   }
 }
 

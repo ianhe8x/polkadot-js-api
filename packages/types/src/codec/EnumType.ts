@@ -6,7 +6,7 @@ import { assert, hexToU8a, isHex, isNumber, isObject, isString, isU8a, u8aConcat
 
 import Base from './Base';
 import Null from '../Null';
-import { Codec, Constructor } from '../types';
+import { Codec, Constructor, ConstructorDef } from '../types';
 
 type TypesDef = {
   [name: string]: Constructor
@@ -92,6 +92,16 @@ export default class EnumType<T> extends Base<Codec> implements Codec {
     return {
       index,
       value: new (Object.values(def)[index])(value)
+    };
+  }
+
+  static with<
+    S extends ConstructorDef
+    > (Types: S): Constructor<EnumType<S>> {
+    return class extends EnumType<S[keyof S]> {
+      constructor (value?: any) {
+        super(Types, value);
+      }
     };
   }
 
