@@ -13,6 +13,7 @@ import MetadataV0 from './v0';
 import MetadataV1 from './v1';
 import MetadataV2 from './v2';
 import v1ToV0 from './v1/toV0';
+import v2ToV0 from './v2/toV0';
 import MagicNumber from './MagicNumber';
 
 class MetadataEnum extends EnumType<Null | MetadataV1 | MetadataV2> {
@@ -100,7 +101,11 @@ export default class MetadataVersioned extends Struct implements MetadataInterfa
     assert(this.metadata.version <= 2, `Cannot convert metadata from v${this.metadata.version} to v0`);
 
     if (isUndefined(this._convertedV0)) {
-      this._convertedV0 = v1ToV0(this.metadata.asV1);
+      if (this.metadata.version === 1) {
+        this._convertedV0 = v1ToV0(this.metadata.asV1);
+      } else {
+        this._convertedV0 = v2ToV0(this.metadata.asV2);
+      }
     }
 
     return this._convertedV0;
