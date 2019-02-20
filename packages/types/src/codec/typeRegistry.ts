@@ -2,6 +2,8 @@
 // This software may be modified and distributed under the terms
 // of the Apache-2.0 license. See the LICENSE file for details.
 
+import { Phase } from '../EventRecord';
+import * as defaultTypes from '../index';
 import { Constructor, RegistryTypes } from '../types';
 
 import { isFunction, isString, isUndefined } from '@polkadot/util';
@@ -12,30 +14,6 @@ import MetadataRegistry, {
   TypeMetadataKind$Struct,
   TypeMetadataKind$Enum
 } from '../Metadata/v2/MetadataRegistry';
-
-// TODO: what is RESULT and UKNOWN and isize
-// const TYPES_V2 = {
-//   Metadata$Str: Default.Text,
-//   Metadata$Unit: Default.Null,
-//   Metadata$Bool: Default.bool,
-//   Metadata$Usize: Default.usize,
-//   // Metadata$Isize: isize,
-//   Metadata$U8: Default.u8,
-//   Metadata$I8: Default.i8,
-//   Metadata$U16: Default.u16,
-//   Metadata$I16: Default.i16,
-//   Metadata$U32: Default.u32,
-//   Metadata$I32: Default.i32,
-//   Metadata$U64: Default.u64,
-//   Metadata$I64: Default.i64,
-//   Metadata$U128: Default.u128,
-//   Metadata$I128: Default.i128,
-//   Metadata$U256: Default.u256,
-//   Metadata$U512: deriveUInt(256),
-//   Metadata$H160: deriveU8aFixed(160),
-//   Metadata$H256: Default.H256,
-//   Metadata$H512: Default.H512
-// };
 
 export class TypeRegistry {
   static readonly defaultRegistry: TypeRegistry = new TypeRegistry();
@@ -69,10 +47,6 @@ export class TypeRegistry {
     }
   }
 
-  // private getStructTypeClass (typeDef: TypeMetadataKind$Primitive | TypeMetadataKind$Struct | TypeMetadataKind$Enum): Constructor {
-  //   if (typeDef instanceof TypeMetadataKind$Struct) {}
-  // }
-  //
   private registerTypeMetadata (obj: MetadataRegistry) {
     let typeDefMap: { [name: string]: Constructor } = {};
     let pendingTypes: TypeMetadata[] = obj.toArray();
@@ -116,29 +90,31 @@ export class TypeRegistry {
     };
 
     let skipped = parseTypeMeta(pendingTypes);
-    this.registerObject(typeDefMap);
+    this.registerObject(typeDefMap, false);
     const skippedLog = [];
     while (skipped.length > 0 && skipped.length < pendingTypes.length) {
       skippedLog.push(skipped.length);
       pendingTypes = skipped;
       typeDefMap = {};
       skipped = parseTypeMeta(pendingTypes);
-      this.registerObject(typeDefMap);
+      this.registerObject(typeDefMap, false);
     }
     if (skipped.length > 0) {
       console.log(`skipped types: ${skipped.length}`);
     }
   }
 
-  private registerObject (obj: RegistryTypes) {
+  private registerObject (obj: RegistryTypes, overwrite: boolean = true) {
     Object.entries(obj).forEach(([name, type]) => {
-      if (isString(type)) {
-        this._registry.set(name, createClass(type));
-      } else if (isFunction(type)) {
-        // This _looks_ a bit funny, but `typeof Clazz === 'function'
-        this._registry.set(name, type);
-      } else {
-        this._registry.set(name, createClass(JSON.stringify(type)));
+      if (overwrite || !this._registry.get(name)) {
+        if (isString(type)) {
+          this._registry.set(name, createClass(type));
+        } else if (isFunction(type)) {
+          // This _looks_ a bit funny, but `typeof Clazz === 'function'
+          this._registry.set(name, type);
+        } else {
+          this._registry.set(name, createClass(JSON.stringify(type)));
+        }
       }
     });
   }
@@ -160,10 +136,13 @@ let defaultRegistry: TypeRegistry;
 
 export default function getDefaultRegistry () {
   if (!defaultRegistry) {
-    const defaultTypes = require('../index');
     const V2_DEFAULT = {
       'srml_indices::address#Address': defaultTypes.Address,
-      'node_runtime#Call': defaultTypes.Proposal
+      'node_runtime#Call': defaultTypes.Proposal,
+      'sr_primitives#AccountId': defaultTypes.AccountId,
+      // FIXME some code in api relay on the implementation of Phase and EventRecord
+      'srml_system#Phase': Phase,
+      'srml_system#EventRecord<node_runtime#Event>': defaultTypes.EventRecord
     };
     defaultRegistry = new TypeRegistry({ ...defaultTypes, ...V2_DEFAULT });
   }

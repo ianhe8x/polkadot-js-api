@@ -23,7 +23,7 @@ import extrinsicsFromMeta from '@polkadot/extrinsics/fromMetadata';
 import RpcBase from '@polkadot/rpc-core/index';
 import RpcRx from '@polkadot/rpc-rx/index';
 import storageFromMeta from '@polkadot/storage/fromMetadata';
-import getRegistry from '@polkadot/types/codec/typeRegistry';
+import getRegistry, { TypeRegistry } from '@polkadot/types/codec/typeRegistry';
 import { Event, Hash, Metadata, Method, RuntimeVersion } from '@polkadot/types/index';
 import { MethodFunction, ModulesWithMethods } from '@polkadot/types/Method';
 import { StorageFunction } from '@polkadot/types/StorageKey';
@@ -70,6 +70,7 @@ export default abstract class ApiBase<CodecResult, SubscriptionResult> implement
   private _runtimeVersion?: RuntimeVersion;
   private _rx: Partial<ApiInterface$Rx> = {};
   private _type: ApiType;
+  private _typeRegistry: TypeRegistry;
 
   /**
    * @description Create an instance of the class
@@ -109,6 +110,7 @@ export default abstract class ApiBase<CodecResult, SubscriptionResult> implement
     this._rx.rpc = this.decorateRpc(this._rpcRx, rxOnCall);
     this._rx.signer = options.signer;
 
+    this._typeRegistry = getRegistry();
     // we only re-register the types (global) if this is not a cloned instance
     if (!options.source) {
       this.registerTypes(options.types);
@@ -303,7 +305,7 @@ export default abstract class ApiBase<CodecResult, SubscriptionResult> implement
    */
   registerTypes (types?: RegistryTypes): void {
     if (types) {
-      getRegistry().register(types);
+      this._typeRegistry.register(types);
     }
   }
 
@@ -348,8 +350,8 @@ export default abstract class ApiBase<CodecResult, SubscriptionResult> implement
         this._runtimeVersion = this._options.source.runtimeVersion;
         this._genesisHash = this._options.source.genesisHash;
       }
-      if (this.runtimeMetadata.asV2) {
-        getRegistry().register(this.runtimeMetadata.asV2.typeRegistry);
+      if (this.runtimeMetadata.version === 2) {
+        this._typeRegistry.register(this.runtimeMetadata.asV2.typeRegistry);
       }
 
       const extrinsics = extrinsicsFromMeta(this.runtimeMetadata.asV0);
