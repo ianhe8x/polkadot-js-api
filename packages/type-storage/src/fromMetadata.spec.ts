@@ -34,7 +34,7 @@ describe('fromMetadata', () => {
   describe('v2', () => {
     const metadataV2 = new Metadata(jsonV2).asV0;
     const newStorageV2 = fromMetadata(metadataV2);
-    it.only('should have same hash', () => {
+    it('should have same hash', () => {
       expect(newStorage.balances.freeBalance(keyring.alice.address())).toEqual(newStorageV2.balances.freeBalance(keyring.alice.address()));
     });
   });

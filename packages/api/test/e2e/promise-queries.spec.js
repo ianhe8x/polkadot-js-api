@@ -66,7 +66,7 @@ describe('e2e queries', () => {
 
   it.only('subscribes to queries (default)', (done) => {
     api.query.staking.validatorPreferences(keyring.ferdie.address(), (prefs) => {
-      expect(prefs.get('unstakeThreshold').toNumber()).toBe(3);
+      expect(prefs.unstakeThreshold.toNumber()).toBe(3);
 
       done();
     });
