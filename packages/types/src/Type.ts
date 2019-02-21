@@ -6,7 +6,7 @@ import Text from './Text';
 
 type Mapper = (value: string) => string;
 
-// const ALLOWED_BOXES = ['Compact', 'Option', 'Vec'];
+const ALLOWED_BOXES = ['Compact', 'Option', 'Vec'];
 
 /**
  * @name Type
@@ -89,6 +89,28 @@ export default class Type extends Text {
     // not allow the re-encoding. Additionally, this is probably more of a decoder-only
     // helper, so treat it as such.
     throw new Error('Type::toU8a: unimplemented');
+  }
+
+  removeGenerics (): Type {
+    let value = this.toString();
+    for (let index = 0; index < value.length; index++) {
+      if (value[index] === '<') {
+        // check against the allowed wrappers, be it Vec<..>, Option<...> ...
+        const box = ALLOWED_BOXES.find((box) => {
+          const start = index - box.length;
+
+          return start >= 0 && value.substr(start, box.length) === box;
+        });
+
+        // we have not found anything, unwrap generic innards
+        if (!box) {
+          const end = Type._findClosing(value, index + 1);
+
+          value = `${value.substr(0, index)}${value.substr(end + 1)}`;
+        }
+      }
+    }
+    return new Type(value);
   }
 
   // given a starting index, find the closing >

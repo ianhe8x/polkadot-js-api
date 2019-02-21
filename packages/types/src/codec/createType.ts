@@ -142,6 +142,10 @@ export function getTypeDef (_type: Text | string, name?: string): TypeDef {
 
 // Returns the type Class for construction
 export function getTypeClass (value: TypeDef): Constructor {
+  const TypeCls = getRegistry().get(value.type);
+  if (TypeCls) {
+    return TypeCls;
+  }
   if (value.info === TypeDefInfo.Compact) {
     assert(value.sub && !Array.isArray(value.sub), 'Expected subtype for Compact');
 
@@ -178,11 +182,7 @@ export function getTypeClass (value: TypeDef): Constructor {
     );
   }
 
-  const Type = getRegistry().getOrThrow(value.type,
-    `Unable to determine type from '${value.type}'`
-  );
-
-  return Type;
+  throw new Error(`Unable to determine type from '${value.type}'`);
 }
 
 export function createClass (type: Text | string, value?: any): Constructor {

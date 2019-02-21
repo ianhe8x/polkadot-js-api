@@ -4,6 +4,7 @@
 
 import { Phase } from '../EventRecord';
 import * as defaultTypes from '../index';
+import Type from '../Type';
 import { Constructor, RegistryTypes } from '../types';
 
 import { isFunction, isString, isUndefined } from '@polkadot/util';
@@ -39,8 +40,7 @@ export class TypeRegistry {
       const type = arg1;
 
       this._registry.set(name, type);
-    }
-    if (arg1 instanceof Array) {
+    } else if (arg1 instanceof Array) {
       this.registerTypeMetadata(arg1);
     } else {
       this.registerObject(arg1 as RegistryTypes);
@@ -106,7 +106,7 @@ export class TypeRegistry {
 
   private registerObject (obj: RegistryTypes, overwrite: boolean = true) {
     Object.entries(obj).forEach(([name, type]) => {
-      if (overwrite || !this._registry.get(name)) {
+      if (overwrite || !this.get(name)) {
         if (isString(type)) {
           this._registry.set(name, createClass(type));
         } else if (isFunction(type)) {
@@ -120,11 +120,16 @@ export class TypeRegistry {
   }
 
   get (name: string): Constructor | undefined {
-    return this._registry.get(name);
+    let retType = this._registry.get(name);
+    if (!retType) {
+      const genericType = new Type(name).removeGenerics();
+      retType = this._registry.get(genericType.toString());
+    }
+    return retType;
   }
 
   getOrThrow (name: string, msg?: string): Constructor {
-    const type = this._registry.get(name);
+    const type = this.get(name);
     if (isUndefined(type)) {
       throw new Error(msg || `type ${name} not found`);
     }
@@ -137,12 +142,25 @@ let defaultRegistry: TypeRegistry;
 export default function getDefaultRegistry () {
   if (!defaultRegistry) {
     const V2_DEFAULT = {
+      // FIXME some code in api relay on the implementation of Phase and EventRecord
+      'sr_primitives#AccountId': defaultTypes.AccountId,
       'srml_indices::address#Address': defaultTypes.Address,
       'node_runtime#Call': defaultTypes.Proposal,
-      'sr_primitives#AccountId': defaultTypes.AccountId,
-      // FIXME some code in api relay on the implementation of Phase and EventRecord
       'srml_system#Phase': Phase,
-      'srml_system#EventRecord<node_runtime#Event>': defaultTypes.EventRecord
+      'srml_system#EventRecord': defaultTypes.EventRecord,
+      'node_runtime#Event': defaultTypes.Event,
+      'sr_primitives::generic::digest#Digest': defaultTypes.Digest,
+      // TODO: remove when Bryan commit a fix
+      '(Vec<u8>,Vec<u8>)': defaultTypes.KeyValue,
+      'substrate_primitives::authority_id#Ed25519AuthorityId': defaultTypes.SessionKey,
+      'sr_primitives#Perbill': defaultTypes.Perbill,
+      'sr_primitives#Permill': defaultTypes.Permill,
+      'srml_democracy#ReferendumInfo': defaultTypes.ReferendumIndex,
+      'srml_contract#Schedule': defaultTypes.Schedule,
+      'srml_grandpa#StoredPendingChange': defaultTypes.StoredPendingChange,
+      'srml_staking#ValidatorPrefs': defaultTypes.ValidatorPrefs,
+      'srml_democracy#Vote': defaultTypes.Vote,
+      'srml_democracy::vote_threshold#VoteThreshold': defaultTypes.VoteThreshold
     };
     defaultRegistry = new TypeRegistry({ ...defaultTypes, ...V2_DEFAULT });
   }
