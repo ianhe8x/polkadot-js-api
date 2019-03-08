@@ -6,4 +6,4 @@ export { WsProvider } from '@polkadot/rpc-provider/index';
 
 export { default as ApiPromise } from './promise';
 export { default as ApiRx } from './rx';
-export { default as SubmittableExtrinsic, SubmittableResult } from './SubmittableExtrinsic';
+export { default as createSubmittableExtrinsic, SubmittableResult } from './SubmittableExtrinsic';

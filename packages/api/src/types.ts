@@ -21,6 +21,8 @@ import { RxResult } from './rx/types';
 import { SubmittableResult, SubmittableExtrinsic } from './SubmittableExtrinsic';
 import ApiBase from './Base';
 
+export { SubmittableExtrinsic } from './SubmittableExtrinsic';
+
 export type OnCallDefinition<CodecResult, SubscriptionResult> = (method: OnCallFunction<RxResult, RxResult>, params?: Array<CodecArg>, callback?: CodecCallback, needsCallback?: boolean) => CodecResult | SubscriptionResult;
 
 export type OnCallFunction<CodecResult, SubscriptionResult> = (...params: Array<CodecArg>) => CodecResult | SubscriptionResult;
